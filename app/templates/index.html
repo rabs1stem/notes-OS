@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rabs1stem notes</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="scene">
+        <h1 class="logo">rabs1stem</h1>
+
+        <div class="top-actions">
+            <button class="new-note-btn" title="New note">+</button>
+            <button class="auth-btn" title="Authentication">AUTH</button>
+        </div>
+
+        <div class="user-chip hidden" id="user-chip"></div>
+        <div id="notes-container"></div>
+    </div>
+
+    <div class="auth-overlay hidden" id="auth-overlay">
+        <div class="auth-modal" id="auth-modal">
+            <button class="auth-close" id="auth-close" aria-label="Close">✕</button>
+
+            <div class="auth-view" id="login-view">
+                <h2>LOGIN</h2>
+                <input id="login-username" type="text" placeholder="username" autocomplete="username">
+                <input id="login-password" type="password" placeholder="password" autocomplete="current-password">
+                <button id="login-submit" class="auth-submit">LOGIN</button>
+                <button id="open-register" class="auth-secondary">REGISTER</button>
+            </div>
+
+            <div class="auth-view hidden" id="register-view">
+                <h2>REGISTER</h2>
+                <input id="register-username" type="text" placeholder="username" autocomplete="username">
+                <input id="register-password" type="password" placeholder="password" autocomplete="new-password">
+                <input id="register-confirm" type="password" placeholder="confirm password" autocomplete="new-password">
+                <button id="register-submit" class="auth-submit">CREATE ACCOUNT</button>
+                <button id="open-login" class="auth-secondary">BACK TO LOGIN</button>
+            </div>
+
+            <div class="auth-message" id="auth-message"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
