@@ -2,47 +2,26 @@ from __future__ import annotations
 
 import hashlib
 import secrets
-from typing import Any
-from uuid import uuid4
 
-from fastapi import Cookie, FastAPI, HTTPException, Request, Response, status
+from fastapi import Cookie, Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
+
+from app.database import Base, engine, get_db
+from app.models import Note, User
+from app.schemas import AuthPayload, NotePayload, RegisterPayload
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
-# In-memory storage (no DB). Users own their notes.
-# users[username] = {"password": "<hash>", "notes": [ ... ]}
-users: dict[str, dict[str, Any]] = {}
-
-# Session storage in memory.
-# sessions[session_token] = username
+# Session storage stays in memory: session token -> username
 sessions: dict[str, str] = {}
-
 SESSION_COOKIE = "notes_session"
 
-
-class AuthPayload(BaseModel):
-    username: str = Field(min_length=3, max_length=32)
-    password: str = Field(min_length=3, max_length=128)
-
-
-class RegisterPayload(AuthPayload):
-    confirm_password: str = Field(min_length=3, max_length=128)
-
-
-class NotePayload(BaseModel):
-    id: str | None = None
-    title: str = Field(default="NOTE", max_length=64)
-    content: str = Field(default="", max_length=10000)
-    x: float = 12
-    y: float = 12
-    width: float = 300
-    height: float = 210
-    collapsed: bool = False
+# Ensure DB tables exist.
+Base.metadata.create_all(bind=engine)
 
 
 def hash_password(password: str) -> str:
@@ -50,10 +29,19 @@ def hash_password(password: str) -> str:
 
 
 def get_username_or_401(session_token: str | None) -> str:
-    # User session is stored by cookie token -> username in sessions dict.
+    # User session is stored by cookie token in memory.
     if not session_token or session_token not in sessions:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     return sessions[session_token]
+
+
+def get_user_or_401(notes_session: str | None, db: Session) -> User:
+    username = get_username_or_401(notes_session)
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        # Session token can become stale if user row was removed.
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    return user
 
 
 @app.get("/")
@@ -62,30 +50,32 @@ def home(request: Request):
 
 
 @app.post("/register")
-def register(payload: RegisterPayload):
+def register(payload: RegisterPayload, db: Session = Depends(get_db)):
     username = payload.username.strip().lower()
     if payload.password != payload.confirm_password:
         raise HTTPException(status_code=400, detail="Passwords do not match")
-    if username in users:
+
+    existing = db.query(User).filter(User.username == username).first()
+    if existing:
         raise HTTPException(status_code=409, detail="Username already exists")
 
-    users[username] = {
-        "password": hash_password(payload.password),
-        # Notes are attached to user here.
-        "notes": [],
-    }
+    new_user = User(username=username, password_hash=hash_password(payload.password))
+    db.add(new_user)
+    db.commit()
+
     return {"ok": True}
 
 
 @app.post("/login")
-def login(payload: AuthPayload, response: Response):
+def login(payload: AuthPayload, response: Response, db: Session = Depends(get_db)):
     username = payload.username.strip().lower()
-    user = users.get(username)
-    if not user or user["password"] != hash_password(payload.password):
+    user = db.query(User).filter(User.username == username).first()
+    if not user or user.password_hash != hash_password(payload.password):
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
     token = secrets.token_urlsafe(32)
     sessions[token] = username
+
     response.set_cookie(
         key=SESSION_COOKIE,
         value=token,
@@ -106,38 +96,103 @@ def logout(response: Response, notes_session: str | None = Cookie(default=None))
 
 
 @app.get("/notes")
-def get_notes(notes_session: str | None = Cookie(default=None)):
-    username = get_username_or_401(notes_session)
-    return {"notes": users[username]["notes"], "username": username}
+def get_notes(notes_session: str | None = Cookie(default=None), db: Session = Depends(get_db)):
+    user = get_user_or_401(notes_session, db)
+    notes = db.query(Note).filter(Note.user_id == user.id).all()
+
+    return {
+        "notes": [
+            {
+                "id": note.id,
+                "title": note.title,
+                "content": note.content,
+                "x": note.x,
+                "y": note.y,
+                "width": note.width,
+                "height": note.height,
+                "collapsed": note.collapsed,
+            }
+            for note in notes
+        ],
+        "username": user.username,
+    }
 
 
 @app.post("/notes")
-def save_note(payload: NotePayload, notes_session: str | None = Cookie(default=None)):
-    username = get_username_or_401(notes_session)
-    note = payload.model_dump()
-    note["title"] = note["title"].strip()[:64] or "NOTE"
+def save_note(
+    payload: NotePayload,
+    notes_session: str | None = Cookie(default=None),
+    db: Session = Depends(get_db),
+):
+    user = get_user_or_401(notes_session, db)
 
-    user_notes = users[username]["notes"]
+    title = payload.title.strip()[:64] or "NOTE"
 
-    if note["id"]:
-        for idx, existing in enumerate(user_notes):
-            if existing["id"] == note["id"]:
-                user_notes[idx] = note
-                return {"ok": True, "note": note, "updated": True}
+    if payload.id is not None:
+        note = db.query(Note).filter(Note.id == payload.id, Note.user_id == user.id).first()
+        if note:
+            note.title = title
+            note.content = payload.content
+            note.x = payload.x
+            note.y = payload.y
+            note.width = payload.width
+            note.height = payload.height
+            note.collapsed = payload.collapsed
+            db.commit()
+            db.refresh(note)
+            return {
+                "ok": True,
+                "updated": True,
+                "note": {
+                    "id": note.id,
+                    "title": note.title,
+                    "content": note.content,
+                    "x": note.x,
+                    "y": note.y,
+                    "width": note.width,
+                    "height": note.height,
+                    "collapsed": note.collapsed,
+                },
+            }
 
-    note["id"] = str(uuid4())
-    user_notes.append(note)
-    return {"ok": True, "note": note, "updated": False}
+    note = Note(
+        user_id=user.id,
+        title=title,
+        content=payload.content,
+        x=payload.x,
+        y=payload.y,
+        width=payload.width,
+        height=payload.height,
+        collapsed=payload.collapsed,
+    )
+    db.add(note)
+    db.commit()
+    db.refresh(note)
+
+    return {
+        "ok": True,
+        "updated": False,
+        "note": {
+            "id": note.id,
+            "title": note.title,
+            "content": note.content,
+            "x": note.x,
+            "y": note.y,
+            "width": note.width,
+            "height": note.height,
+            "collapsed": note.collapsed,
+        },
+    }
 
 
 @app.delete("/notes/{note_id}")
-def delete_note(note_id: str, notes_session: str | None = Cookie(default=None)):
-    username = get_username_or_401(notes_session)
-    user_notes = users[username]["notes"]
+def delete_note(note_id: int, notes_session: str | None = Cookie(default=None), db: Session = Depends(get_db)):
+    user = get_user_or_401(notes_session, db)
+    note = db.query(Note).filter(Note.id == note_id, Note.user_id == user.id).first()
 
-    before = len(user_notes)
-    users[username]["notes"] = [note for note in user_notes if note["id"] != note_id]
-    if len(users[username]["notes"]) == before:
+    if not note:
         raise HTTPException(status_code=404, detail="Note not found")
 
+    db.delete(note)
+    db.commit()
     return {"ok": True}
