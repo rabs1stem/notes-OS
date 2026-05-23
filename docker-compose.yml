@@ -1,0 +1,26 @@
+services:
+  note:
+    container_name: note
+    image: note_img:v1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+    restart: unless-stopped 
+    volumes:
+      - note_data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+    networks:
+      - my
+volumes:
+  note_data:
+networks: 
+  my:
+    driver: bridge
