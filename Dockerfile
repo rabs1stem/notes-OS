@@ -15,7 +15,8 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 COPY app ./app
 RUN apt-get update && apt-get upgrade -y --no-install-recommends \
-&& groupadd --system app && useradd --system --gid app app && chown -R app:app ./ \
+&& groupadd --system app && useradd --system --gid app app \
+&& mkdir -p /app/data && chown -R app:app ./ \
 && rm -rf /var/lib/apt/lists/*
 USER app
 EXPOSE 8000

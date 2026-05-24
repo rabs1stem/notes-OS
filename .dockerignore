@@ -3,3 +3,4 @@ venv/
 .git
 .gitignore
 notes.db
+__pycache__
