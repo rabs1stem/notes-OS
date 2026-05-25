@@ -196,3 +196,4 @@ def delete_note(note_id: int, notes_session: str | None = Cookie(default=None), 
     db.delete(note)
     db.commit()
     return {"ok": True}
+
