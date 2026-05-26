@@ -4,3 +4,4 @@ venv/
 .gitignore
 notes.db
 __pycache__
+.pytest_cache

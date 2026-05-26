@@ -1,6 +1,6 @@
 services:
-  note:
-    container_name: note
+  note1:
+    container_name: note1
     image: note_img:v1.0
     build:
       context: .
@@ -11,12 +11,61 @@ services:
     volumes:
       - note_data:/app/data
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"]
-      interval: 30s
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://localhost:8000/')
+      interval: 20s
       timeout: 5s
       retries: 3
-      start_period: 20s
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+      start_period: 7s
+    command: 
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --workers
+      - "1"
+      - --proxy-headers
+      - --forwarded-allow-ips=172.18.0.0/16
+    networks:
+      - my
+
+  note2:
+    container_name: note2
+    image: note_img:v1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - 8000
+    restart: unless-stopped
+    volumes:
+      - note_data:/app/data
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen('http://localhost:8000/')
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 7s
+    command: 
+      - uvicorn
+      - app.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --workers
+      - "1"
+      - --proxy-headers
+      - --forwarded-allow-ips=172.18.0.0/16
     networks:
       - my
 
@@ -26,8 +75,20 @@ services:
     volumes:
       - ./nginx-edge/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -q
+        - -O
+        - /dev/null
+        - http://127.0.0.1
+      interval: 20s
+      timeout: 5s
+      retries: 3
     depends_on:
-      - nginx-internal
+      nginx-internal:
+        condition: service_healthy
     ports:
       - 8181:80
     networks:
@@ -38,8 +99,22 @@ services:
     volumes:
       - ./nginx-internal/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - -q
+        - -O
+        - /dev/null
+        - http://127.0.0.1
+      interval: 20s
+      timeout: 5s
+      retries: 3
     depends_on:
-      - note
+      note1:
+        condition: service_healthy
+      note2:
+        condition: service_healthy
     networks:
       - my
 volumes:
