@@ -1,4 +1,24 @@
 services:
+  redis:
+    container_name: redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: 
+        - CMD
+        - redis-cli
+        - ping
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 7s
+    volumes:
+      - redis_data:/data
+    expose:
+      - 6379
+    networks:
+      - my
+  
   note1:
     container_name: note1
     image: note_img:v1.0
@@ -10,12 +30,17 @@ services:
     restart: unless-stopped
     volumes:
       - note_data:/app/data
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
     healthcheck:
       test:
         - CMD
         - python
         - -c
-        - import urllib.request; urllib.request.urlopen('http://localhost:8000/')
+        - import urllib.request; urllib.request.urlopen('http://localhost:8000/health')
       interval: 20s
       timeout: 5s
       retries: 3
@@ -45,12 +70,17 @@ services:
     restart: unless-stopped
     volumes:
       - note_data:/app/data
+    environment:
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
     healthcheck:
       test:
         - CMD
         - python
         - -c
-        - import urllib.request; urllib.request.urlopen('http://localhost:8000/')
+        - import urllib.request; urllib.request.urlopen('http://localhost:8000/health')
       interval: 20s
       timeout: 5s
       retries: 3
@@ -82,7 +112,7 @@ services:
         - -q
         - -O
         - /dev/null
-        - http://127.0.0.1
+        - http://127.0.0.1/health
       interval: 20s
       timeout: 5s
       retries: 3
@@ -93,6 +123,7 @@ services:
       - 8181:80
     networks:
       - my
+
   nginx-internal:
     container_name: nginx-internal
     image: nginx:1.28-alpine
@@ -106,7 +137,7 @@ services:
         - -q
         - -O
         - /dev/null
-        - http://127.0.0.1
+        - http://127.0.0.1/health
       interval: 20s
       timeout: 5s
       retries: 3
@@ -119,6 +150,7 @@ services:
       - my
 volumes:
   note_data:
+  redis_data:
 networks: 
   my:
     driver: bridge

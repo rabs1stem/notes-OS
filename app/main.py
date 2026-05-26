@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import secrets
 
 from fastapi import Cookie, Depends, FastAPI, HTTPException, Request, Response, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from redis import Redis
+from redis.exceptions import RedisError
 from sqlalchemy.orm import Session
 
 from app.database import Base, engine, get_db
@@ -16,9 +19,10 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
-# Session storage stays in memory: session token -> username
-sessions: dict[str, str] = {}
 SESSION_COOKIE = "notes_session"
+SESSION_TTL_SECONDS = int(os.getenv("SESSION_TTL_SECONDS", str(60 * 60 * 24 * 7)))
+REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
+redis_client = Redis.from_url(REDIS_URL, decode_responses=True)
 
 # Ensure DB tables exist.
 Base.metadata.create_all(bind=engine)
@@ -28,11 +32,38 @@ def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
+def session_key(token: str) -> str:
+    return f"session:{token}"
+
+
+def save_session(token: str, username: str) -> None:
+    try:
+        redis_client.setex(session_key(token), SESSION_TTL_SECONDS, username)
+    except RedisError as exc:
+        raise HTTPException(status_code=503, detail="Session store unavailable") from exc
+
+
+def load_session_username(token: str) -> str | None:
+    try:
+        return redis_client.get(session_key(token))
+    except RedisError as exc:
+        raise HTTPException(status_code=503, detail="Session store unavailable") from exc
+
+
+def delete_session(token: str) -> None:
+    try:
+        redis_client.delete(session_key(token))
+    except RedisError:
+        pass
+
+
 def get_username_or_401(session_token: str | None) -> str:
-    # User session is stored by cookie token in memory.
-    if not session_token or session_token not in sessions:
+    if not session_token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
-    return sessions[session_token]
+    username = load_session_username(session_token)
+    if not username:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
+    return username
 
 
 def get_user_or_401(notes_session: str | None, db: Session) -> User:
@@ -74,7 +105,7 @@ def login(payload: AuthPayload, response: Response, db: Session = Depends(get_db
         raise HTTPException(status_code=401, detail="Invalid username or password")
 
     token = secrets.token_urlsafe(32)
-    sessions[token] = username
+    save_session(token, username)
 
     response.set_cookie(
         key=SESSION_COOKIE,
@@ -89,8 +120,8 @@ def login(payload: AuthPayload, response: Response, db: Session = Depends(get_db
 
 @app.post("/logout")
 def logout(response: Response, notes_session: str | None = Cookie(default=None)):
-    if notes_session and notes_session in sessions:
-        sessions.pop(notes_session, None)
+    if notes_session:
+        delete_session(notes_session)
     response.delete_cookie(SESSION_COOKIE)
     return {"ok": True}
 
@@ -197,3 +228,6 @@ def delete_note(note_id: int, notes_session: str | None = Cookie(default=None), 
     db.commit()
     return {"ok": True}
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
