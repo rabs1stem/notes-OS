@@ -173,10 +173,53 @@ services:
         condition: service_healthy
     networks:
       - my
+
+  cadvisor:
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:v0.52.0
+    restart: unless-stopped
+    privileged: true
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+    networks:
+      - my
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:v3.5.0
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      - cadvisor
+    networks:
+      - my
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:12.0.0
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - my
+
 volumes:
   note_data:
   redis_data:
   postgres_data:
+  prometheus_data:
+  grafana_data:
 networks: 
   my:
     driver: bridge
