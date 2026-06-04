@@ -179,8 +179,8 @@ services:
     image: gcr.io/cadvisor/cadvisor:v0.52.0
     restart: unless-stopped
     privileged: true
-    ports:
-      - "8080:8080"
+    expose:
+      - 8080
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -193,8 +193,8 @@ services:
     container_name: prometheus
     image: prom/prometheus:v3.5.0
     restart: unless-stopped
-    ports:
-      - "9090:9090"
+    expose:
+      - 9090
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
@@ -217,8 +217,8 @@ services:
     container_name: node-exporter
     image: prom/node-exporter:v1.9.1
     restart: unless-stopped
-    ports:
-      - "9100:9100"
+    expose:
+      - 9100
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -235,8 +235,8 @@ services:
     container_name: loki
     image: grafana/loki:3.4.2
     restart: unless-stopped
-    ports:
-      - "3100:3100"
+    expose:
+      - 3100
     command:
       - -config.file=/etc/loki/local-config.yaml
     volumes:
@@ -263,8 +263,8 @@ services:
     container_name: alertmanager
     image: prom/alertmanager:v0.28.1
     restart: unless-stopped
-    ports:
-      - "9093:9093"
+    expose:
+      - 9093
     volumes:
       - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
     networks:
@@ -277,7 +277,6 @@ volumes:
   prometheus_data:
   grafana_data:
   loki_data:
-  telegram_data:
 networks: 
   my:
     driver: bridge
