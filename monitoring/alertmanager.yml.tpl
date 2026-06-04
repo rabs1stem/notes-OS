@@ -2,13 +2,13 @@ global:
   resolve_timeout: 5m
 
   smtp_smarthost: smtp.yandex.ru:587
-  smtp_from: $(...@yandex.ru)
-  smtp_auth_username: $(...@yandex.ru)
-  smtp_auth_password: $(pass)
+  smtp_from: ???
+  smtp_auth_username: ???
+  smtp_auth_password: ???
   smtp_require_tls: true
 
 route:
-  receiver: email
+  receiver: default 
 
   group_by:
     - alertname
@@ -20,9 +20,19 @@ route:
   repeat_interval: 1h
 
 receivers:
-  - name: email
+  - name: default
+    
     email_configs:
-      - to: $(...@yandex.ru)
-      headers:
-          Subject: '[{{ .Status | toUpper }}][{{ .CommonLabels.severity | toUpper }}] {{ .CommonAnnotations.summary }}'
+      - to: ???
         send_resolved: true
+        headers:
+          Subject: '{{ if eq .Status "firing" }}🚨{{ else }}✅{{ end }} [{{ .CommonLabels.severity | toUpper }}] {{ .CommonAnnotations.summary }}'
+    
+    telegram_configs:
+      - bot_token: ???
+        chat_id: ???
+        send_resolved: true
+        message: |
+          {{ if eq .Status "firing" }}🚨{{ else }}✅ FIXED{{ end }} {{ .CommonAnnotations.summary }}
+          
+          Severity: {{ .CommonLabels.severity }}
