@@ -16,7 +16,7 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    background:radial-gradient(circle at top,#0f1727 0%,#090f1c 42%,#05070f 75%,#020205 100%);
+    background:radial-gradient(circle at top,#1a1e24 0%,#15191e 42%,#101318 76%,#0b0d11 100%);
     font-family:Inter,Arial,sans-serif;
     color:var(--text);
 }
@@ -26,9 +26,9 @@ body::before{
     position:absolute;
     inset:0;
     background:
-        radial-gradient(circle at 20% 18%,rgba(90,140,220,0.08),transparent 34%),
-        radial-gradient(circle at 82% 30%,rgba(95,130,200,0.07),transparent 36%),
-        radial-gradient(circle at 50% 84%,rgba(130,165,205,0.05),transparent 46%);
+        radial-gradient(circle at 20% 18%,rgba(95,155,220,0.025),transparent 34%),
+        radial-gradient(circle at 82% 30%,rgba(120,150,205,0.02),transparent 36%),
+        radial-gradient(circle at 50% 84%,rgba(130,165,205,0.018),transparent 46%);
     filter:blur(60px);
     animation:ambient 12s ease-in-out infinite;
     pointer-events:none;
@@ -63,12 +63,17 @@ body::before{
 .crystal-letter{
     position:relative;
     display:inline-block;
+    --tube-color:rgba(125,220,255,0.68);
+    --tube-edge:rgba(215,246,255,0.72);
+    --tube-glow:rgba(125,220,255,0.18);
     color:transparent;
-    -webkit-text-stroke:1px rgba(230,248,255,0.75);
-    background:linear-gradient(130deg,rgba(255,255,255,0.7) 0%,rgba(180,230,255,0.17) 30%,rgba(255,255,255,0.08) 58%,rgba(160,230,255,0.24) 100%);
-    -webkit-background-clip:text;
-    background-clip:text;
-    text-shadow:0 0 1px rgba(255,255,255,0.65),0 0 8px rgba(120,220,255,0.45);
+    -webkit-text-fill-color:transparent;
+    -webkit-text-stroke:1.7px var(--tube-edge);
+    text-shadow:none;
+    filter:
+        drop-shadow(0 0 2px var(--tube-edge))
+        drop-shadow(0 0 5px var(--tube-color))
+        drop-shadow(0 0 9px var(--tube-glow));
     transform:translateZ(0);
     animation:crystalPulse 9.5s ease-in-out infinite var(--delay);
 }
@@ -78,14 +83,24 @@ body::before{
     position:absolute;
     inset:0;
     color:transparent;
-    background:
-        linear-gradient(108deg,rgba(255,255,255,0.88) 3%,rgba(255,255,255,0.14) 24%,rgba(255,255,255,0.75) 34%,rgba(255,255,255,0.1) 48%,rgba(255,255,255,0.84) 62%,rgba(255,255,255,0.16) 84%),
-        linear-gradient(30deg,transparent 0 22%,rgba(255,255,255,0.2) 22% 30%,transparent 30% 44%,rgba(255,255,255,0.22) 44% 50%,transparent 50% 66%,rgba(255,255,255,0.18) 66% 72%,transparent 72% 100%);
-    background-size:260% 260%,100% 100%;
-    -webkit-background-clip:text;
-    background-clip:text;
-    opacity:.84;
-    animation:facetFlow 14s linear infinite var(--delay);
+    -webkit-text-fill-color:transparent;
+    -webkit-text-stroke:.75px rgba(255,255,255,0.48);
+    text-shadow:none;
+    opacity:.34;
+}
+
+.crystal-letter::after{
+    content:attr(data-letter);
+    position:absolute;
+    inset:0;
+    color:transparent;
+    -webkit-text-fill-color:transparent;
+    -webkit-text-stroke:2.2px var(--tube-color);
+    text-shadow:none;
+    filter:
+        drop-shadow(0 0 4px var(--tube-color))
+        drop-shadow(0 0 9px var(--tube-glow));
+    opacity:.22;
 }
 
 .crystal-letter[data-mode="steady"]{opacity:1}
@@ -94,14 +109,14 @@ body::before{
 .crystal-letter[data-mode="dim"]{animation:crystalPulse 9.5s ease-in-out infinite var(--delay),signDim 8.2s ease-in-out infinite var(--delay)}
 .crystal-letter[data-mode="half"]{animation:crystalPulse 9.5s ease-in-out infinite var(--delay),signHalf 7.5s ease-in-out infinite var(--delay)}
 
-.crystal-letter[data-letter="r"]{filter:drop-shadow(0 0 10px rgba(95,170,255,0.6))}
-.crystal-letter[data-letter="a"]{filter:drop-shadow(0 0 10px rgba(180,140,255,0.52))}
-.crystal-letter[data-letter="b"]{filter:drop-shadow(0 0 10px rgba(255,170,105,0.5))}
-.crystal-letter[data-letter="s"]{filter:drop-shadow(0 0 10px rgba(255,120,190,0.5))}
-.crystal-letter[data-letter="1"]{filter:drop-shadow(0 0 11px rgba(140,255,120,0.65))}
-.crystal-letter[data-letter="t"]{filter:drop-shadow(0 0 10px rgba(110,220,255,0.55))}
-.crystal-letter[data-letter="e"]{filter:drop-shadow(0 0 10px rgba(255,225,130,0.52))}
-.crystal-letter[data-letter="m"]{filter:drop-shadow(0 0 10px rgba(145,190,255,0.58))}
+.crystal-letter[data-letter="r"]{--tube-color:rgba(85,165,255,0.62);--tube-edge:rgba(175,220,255,0.7);--tube-glow:rgba(85,165,255,0.2)}
+.crystal-letter[data-letter="a"]{--tube-color:rgba(180,130,255,0.58);--tube-edge:rgba(220,195,255,0.66);--tube-glow:rgba(180,130,255,0.18)}
+.crystal-letter[data-letter="b"]{--tube-color:rgba(255,155,80,0.56);--tube-edge:rgba(255,210,170,0.64);--tube-glow:rgba(255,155,80,0.17)}
+.crystal-letter[data-letter="s"]{--tube-color:rgba(255,95,175,0.56);--tube-edge:rgba(255,180,220,0.64);--tube-glow:rgba(255,95,175,0.17)}
+.crystal-letter[data-letter="1"]{--tube-color:rgba(120,255,105,0.6);--tube-edge:rgba(195,255,180,0.66);--tube-glow:rgba(120,255,105,0.18)}
+.crystal-letter[data-letter="t"]{--tube-color:rgba(85,215,255,0.58);--tube-edge:rgba(185,245,255,0.66);--tube-glow:rgba(85,215,255,0.18)}
+.crystal-letter[data-letter="e"]{--tube-color:rgba(255,215,95,0.55);--tube-edge:rgba(255,238,185,0.62);--tube-glow:rgba(255,215,95,0.16)}
+.crystal-letter[data-letter="m"]{--tube-color:rgba(135,180,255,0.58);--tube-edge:rgba(205,225,255,0.66);--tube-glow:rgba(135,180,255,0.18)}
 
 .top-actions{
     position:absolute;

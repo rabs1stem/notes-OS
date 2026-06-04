@@ -1,0 +1,68 @@
+groups:
+  - name: infrastructure
+    rules:
+
+      - alert: HostDown
+        expr: up{job="node-exporter"} == 0
+#        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Host is down"
+
+      - alert: CadvisorDown
+        expr: up{job="cadvisor"} == 0
+#        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "cAdvisor is down"
+
+      - alert: ContainerDown
+        expr: time() - container_last_seen{name!=""} > 90
+#        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container {{ $labels.name }} is down"
+
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU usage above 95%"
+
+      - alert: HighMemoryUsage
+        expr: (
+                (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)
+                /
+                node_memory_MemTotal_bytes
+              ) * 100 > 95
+#        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memory usage above 95%"
+
+      - alert: DiskUsageHigh
+        expr: (
+                100 -
+                (
+                  node_filesystem_avail_bytes{
+                    mountpoint="/",
+                    fstype!~"tmpfs|overlay"
+                  }
+                  /
+                  node_filesystem_size_bytes{
+                    mountpoint="/",
+                    fstype!~"tmpfs|overlay"
+                  } * 100
+                )
+              ) > 95
+#        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk usage above 95%"

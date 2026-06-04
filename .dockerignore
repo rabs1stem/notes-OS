@@ -6,3 +6,7 @@ notes.db
 __pycache__
 .pytest_cache
 .env
+monitoring/
+nginx-edge/
+nginx-internal/
+monitor.json

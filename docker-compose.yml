@@ -198,8 +198,7 @@ services:
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
-    depends_on:
-      - cadvisor
+      - ./monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
     networks:
       - my
 
@@ -216,7 +215,7 @@ services:
 
   node-exporter:
     container_name: node-exporter
-    image: prom/node-exporter:latest
+    image: prom/node-exporter:v1.9.1
     restart: unless-stopped
     ports:
       - "9100:9100"
@@ -260,6 +259,17 @@ services:
     networks:
       - my
 
+  alertmanager:
+    container_name: alertmanager
+    image: prom/alertmanager:v0.28.1
+    restart: unless-stopped
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    networks:
+      - my
+
 volumes:
   note_data:
   redis_data:
@@ -267,6 +277,7 @@ volumes:
   prometheus_data:
   grafana_data:
   loki_data:
+  telegram_data:
 networks: 
   my:
     driver: bridge
