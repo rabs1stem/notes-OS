@@ -1,0 +1,40 @@
+---
+- name: Install packages
+  apt:
+    name:
+      - curl
+      - wget
+      - git
+      - neovim
+    state: present
+    update_cache: true
+
+- name: Create user
+  user: 
+    name: deploy
+    shell: /bin/bash
+    groups: sudo
+    append: true
+    create_home: true
+    state: present
+
+- name: Create .ssh
+  file:
+    path: /home/deploy/.ssh
+    state: directory
+    owner: deploy
+    group: deploy
+    mode: "700"
+
+- name: Add auth key
+  authorized_key:
+    user: deploy
+    key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+
+- name: Allow deploy passwordless sudo
+  copy:
+    dest: /etc/sudoers.d/deploy
+    content: "deploy ALL=(ALL) NOPASSWD:ALL\n"
+    owner: root
+    group: root
+    mode: "0440"

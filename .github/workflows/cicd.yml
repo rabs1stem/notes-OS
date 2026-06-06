@@ -1,0 +1,89 @@
+name: ci
+on:
+  push:
+    branches: [main, feature]
+  pull_request:
+    branches: [main]
+jobs:
+  secrets:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_CONFIG: .gitleaks.toml
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
+  note:
+    needs: secrets
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: ../requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r ../requirements.txt
+          pip install ruff pytest pytest-cov pytest-xdist pytest-asyncio pip-audit httpx
+      - name: Dependency vulnerability scan
+        run: pip-audit
+      - name: Ruff checks
+        run: ruff check .
+      - name: Run test
+        run: pytest -v ../tests
+  docker:
+    needs: note
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+            cat > .env <<EOF
+            POSTGRES_DB=${{vars.POSTGRES_DB}}
+            POSTGRES_USER=${{vars.POSTGRES_USER}}
+            POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}}
+            DATABASE_URL=${{secrets.DATABASE_URL}}
+            TELEGRAM_TOKEN=${{secrets.TELEGRAM_TOKEN}}
+            TELEGRAM_ADMIN=${{vars.TELEGRAM_ADMIN}}
+            SMTP_FROM=${{vars.SMTP_FROM}}
+            SMTP_USERNAME=${{vars.SMTP_USERNAME}}
+            ALERT_EMAIL=${{vars.ALERT_EMAIL}}
+            SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}}
+            EOF
+      - name: Validate compose config
+        run: docker compose config
+      - run: docker compose up -d --build
+      - run: |
+          for i in {1..30}; do
+            curl -fsS http://127.0.0.1:80/health && exit 0
+            sleep 2
+          done
+          exit 1
+      - if: success()
+        run: docker ps
+      - if: failure()
+        run: docker compose logs
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y trivy
+      - name: Scan note image
+        run: trivy image note_img:v1.0 --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+      - name: Scan nginx image
+        run: trivy image nginx:1.28-alpine --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+      - name: Scan postgres image
+        run: trivy image postgres:17-bookworm --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+      - name: Scan redis image
+        run: trivy image redis:7-alpine --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+
+      - if: always()
+        run: |
+          docker compose down -v
+          rm -f .env

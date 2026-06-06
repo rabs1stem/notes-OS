@@ -45,7 +45,7 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 6,
+        "w": 4,
         "x": 0,
         "y": 0
       },
@@ -90,6 +90,80 @@
           "color": {
             "mode": "thresholds"
           },
+          "decimals": 2,
+          "fieldMinMax": false,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "#EAB839",
+                "value": 1
+              },
+              {
+                "color": "orange",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 4,
+        "y": 0
+      },
+      "id": 33,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.0",
+      "targets": [
+        {
+          "editorMode": "code",
+          "expr": "round(\n  100 * avg(rate(node_cpu_seconds_total{mode=\"iowait\"}[5m])) by (instance),\n  0.01\n)",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "⏳ I/O Wait",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "ffnpzslp14pogd"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -120,8 +194,8 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 5,
-        "x": 6,
+        "w": 4,
+        "x": 7,
         "y": 0
       },
       "id": 18,
@@ -448,7 +522,7 @@
       },
       "gridPos": {
         "h": 5,
-        "w": 6,
+        "w": 7,
         "x": 0,
         "y": 3
       },
@@ -998,7 +1072,6 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
         "uid": "ffnpzslp14pogd"
       },
       "fieldConfig": {
@@ -1061,7 +1134,7 @@
         "x": 0,
         "y": 22
       },
-      "id": 5,
+      "id": 1,
       "options": {
         "legend": {
           "calcs": [],
@@ -1079,13 +1152,15 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "topk(\n  5,\n  sum by(name) (\n    rate(container_cpu_usage_seconds_total{name!=\"\"}[1m])\n  ) * 100\n)",
+          "exemplar": false,
+          "expr": "topk(\n  5,\n  sum by(name)(\n    container_memory_working_set_bytes{name!=\"\"}\n  ) / 1024 / 1024\n)",
+          "instant": false,
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "🔍 CPU Usage by Container",
+      "title": "🔍 RAM Usage by Container",
       "type": "timeseries"
     },
     {
@@ -1182,6 +1257,7 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "ffnpzslp14pogd"
       },
       "fieldConfig": {
@@ -1244,7 +1320,7 @@
         "x": 0,
         "y": 30
       },
-      "id": 1,
+      "id": 5,
       "options": {
         "legend": {
           "calcs": [],
@@ -1262,15 +1338,13 @@
       "targets": [
         {
           "editorMode": "code",
-          "exemplar": false,
-          "expr": "topk(\n  5,\n  sum by(name)(\n    container_memory_working_set_bytes{name!=\"\"}\n  ) / 1024 / 1024\n)",
-          "instant": false,
+          "expr": "topk(\n  5,\n  sum by(name) (\n    rate(container_cpu_usage_seconds_total{name!=\"\"}[1m])\n  ) * 100\n)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "🔍 RAM Usage by Container",
+      "title": "🔍 CPU Usage by Container",
       "type": "timeseries"
     },
     {
@@ -1950,5 +2024,5 @@
   "timezone": "browser",
   "title": "My Monitor",
   "uid": "c234b526-9e1b-45bc-95c1-f7d262b121ae",
-  "version": 207
+  "version": 212
 }
