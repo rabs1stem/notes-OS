@@ -49,6 +49,7 @@ jobs:
             POSTGRES_DB=${{vars.POSTGRES_DB}}
             POSTGRES_USER=${{vars.POSTGRES_USER}}
             POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}}
+            REDIS_URL=${{secret.REDIS_URL}}
             DATABASE_URL=${{secrets.DATABASE_URL}}
             TELEGRAM_TOKEN=${{secrets.TELEGRAM_TOKEN}}
             TELEGRAM_ADMIN=${{vars.TELEGRAM_ADMIN}}
