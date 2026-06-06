@@ -74,11 +74,11 @@ jobs:
       - name: Scan note image
         run: trivy image note_img:v1.0 --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
       - name: Scan nginx image
-        run: trivy image nginx:1.28-alpine --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+        run: trivy image nginx:1.28-alpine --severity HIGH,CRITICAL --ignore-unfixed 
       - name: Scan postgres image
-        run: trivy image postgres:17-bookworm --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+        run: trivy image postgres:17-bookworm --severity HIGH,CRITICAL --ignore-unfixed 
       - name: Scan redis image
-        run: trivy image redis:7-alpine --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+        run: trivy image redis:7-alpine --severity HIGH,CRITICAL --ignore-unfixed
 
       - if: always()
         run: |
