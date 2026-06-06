@@ -59,7 +59,7 @@ jobs:
       - run: docker compose up -d --build
       - run: |
           for i in {1..30}; do
-            curl -fsS http://127.0.0.1:80/health && exit 0
+            curl -fsS http://127.0.0.1:8181/health && exit 0
             sleep 2
           done
           exit 1
