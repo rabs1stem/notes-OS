@@ -29,11 +29,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r ../requirements.txt
           pip install ruff pytest pytest-cov pytest-xdist pytest-asyncio pip-audit httpx
-      - name: Show versions
-        run: |
-            pip show fastapi
-            pip show starlette
-
       - name: Dependency vulnerability scan
         run: pip-audit
       - name: Ruff checks
