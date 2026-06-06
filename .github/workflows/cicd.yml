@@ -32,8 +32,12 @@ jobs:
         run: ruff check app
       - name: Run test
         env:
-            PYTHONPATH: ${{ github.workspace }}
-        run: pytest -v app/tests
+            PYTHONPATH: ${{ github.workspace }}/app
+        run: pytest -n auto \
+          --cov=. \
+          --cov-report=term-missing \
+          --asyncio-mode=auto \
+          -q
   docker:
     needs: note
     runs-on: ubuntu-24.04
