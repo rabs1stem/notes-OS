@@ -31,6 +31,8 @@ jobs:
       - name: Ruff checks
         run: ruff check app
       - name: Run test
+        env:
+            PYTHONPATH: ${{ github.workspace }}
         run: pytest -v app/tests
   docker:
     needs: note
