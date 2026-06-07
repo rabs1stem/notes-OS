@@ -116,6 +116,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-              ghcr.io/rabs1stem/notes-OS:${{github.sha}}
-              ghcr.io/rabs1stem/notes-OS:latest
+              ghcr.io/rabs1stem/notes-os:${{github.sha}}
+              ghcr.io/rabs1stem/notes-os:latest
               
