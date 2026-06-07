@@ -87,4 +87,4 @@ jobs:
       - if: always()
         run: |
           docker compose down -v
-          rm -f .env
+          rm -f .env monitoring/alertmanager.yml

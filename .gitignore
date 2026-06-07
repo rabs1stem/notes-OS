@@ -6,4 +6,4 @@ venv/
 .DS_Store
 .env
 *.log
-alertmanager.yml
+monitoring/alertmanager.yml
