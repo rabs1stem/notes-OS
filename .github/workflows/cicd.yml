@@ -54,6 +54,10 @@ jobs:
             ALERT_EMAIL=${{vars.ALERT_EMAIL}}
             SMTP_PASSWORD=${{secrets.SMTP_PASSWORD}}
             EOF
+      - name: Generate Alertmanager config
+        run: |
+            export $(grep -v '^#' .env | xargs)
+            envsubst < monitoring/alertmanager.yml.tpl > monitoring/alertmanager.yml
       - name: Validate compose config
         run: docker compose config
       - run: docker compose up -d --build

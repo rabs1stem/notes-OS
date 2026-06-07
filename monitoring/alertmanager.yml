@@ -2,9 +2,9 @@ global:
   resolve_timeout: 5m
 
   smtp_smarthost: smtp.yandex.ru:587
-  smtp_from: ${SMTP_FROM}
-  smtp_auth_username: ${SMTP_USERNAME}
-  smtp_auth_password: ${SMTP_PASSWORD}
+  smtp_from: arab177gy@yandex.ru
+  smtp_auth_username: arab177gy@yandex.ru
+  smtp_auth_password: sdayfkqamvozpuif
   smtp_require_tls: true
 
 route:
@@ -23,14 +23,14 @@ receivers:
   - name: default
 
     email_configs:
-      - to: ${ALERT_EMAIL}
+      - to: arab177gy@yandex.ru
         send_resolved: true
         headers:
           Subject: '{{ if eq .Status "firing" }}🚨{{ else }}✅{{ end }} [{{ .CommonLabels.severity | toUpper }}] {{ .CommonAnnotations.summary }}'
 
     telegram_configs:
-      - bot_token: ${TELEGRAM_TOKEN}
-        chat_id: ${TELEGRAM_ADMIN}
+      - bot_token: 8992557205:AAFjbKXYPeBLpIpH5_AwhQknHQSsNzeb1n0
+        chat_id: 983685013
         send_resolved: true
         message: |
           {{ if eq .Status "firing" }}🚨{{ else }}✅ FIXED{{ end }} {{ .CommonAnnotations.summary }}
