@@ -2,39 +2,115 @@ groups:
   - name: infrastructure
     rules:
 
-      - alert: HostDown
-        expr: up{job="node-exporter"} == 0
-        for: 1m
+      - alert: Node-exporterDown
+        expr: absent(container_last_seen{name="node-exporter"})
+        for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "Host is down"
+          summary: "Container node-exporter is down"
 
       - alert: CadvisorDown
-        expr: up{job="cadvisor"} == 0
-        for: 1m
+        expr: absent(container_last_seen{name="cadvisor"})
+        for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "cAdvisor is down"
+          summary: "Container cadvisor is down"
 
-      - alert: ContainerDown
-        expr: time() - container_last_seen{name!=""} > 120
-        for: 30s
+      - alert: LokiDown
+        expr: absent(container_last_seen{name="loki"})
+        for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "Container {{ $labels.name }} is down"
+          summary: "Container loki is down"
+
+      - alert: PromtailDown
+        expr: absent(container_last_seen{name="promtail"})
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container promtail is down"
+
+      - alert: PostgresDown
+        expr: absent(container_last_seen{name="postgres"})
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container postgres is down"
+
+      - alert: RedisDown
+        expr: absent(container_last_seen{name="redis"})
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container redis is down"
+
+      - alert: Note1Down
+        expr: absent(container_last_seen{name="note1"})
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container note1 is down"
+
+      - alert: Note2Down
+        expr: absent(container_last_seen{name="note2"})
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container note2 is down"
+
+      - alert: Nging-edgeDown
+        expr: absent(container_last_seen{name="nginx-edge"})
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container nginx-edge is down"
+
+      - alert: Nging-internalDown
+        expr: absent(container_last_seen{name="nginx-internal"})
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container nginx-internal is down"
 
       - alert: HighCPUUsage
-        expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+        expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
         for: 10m
         labels:
           severity: warning
         annotations:
-          summary: "CPU usage above 95%"
+          summary: "CPU usage on {{ $labels.instance }} above 90%"
+
+      - alert: VeryHighCPUUsage
+        expr: 100 - (avg by(instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Memory usage on {{ $labels.instance }} above 95%"
 
       - alert: HighMemoryUsage
+        expr: (
+                (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)
+                /
+                node_memory_MemTotal_bytes
+              ) * 100 > 85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memory usage on {{ $labels.instance }} above 85%"
+      
+      - alert: VeryHighMemoryUsage
         expr: (
                 (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes)
                 /
@@ -42,11 +118,32 @@ groups:
               ) * 100 > 95
         for: 10m
         labels:
+          severity: critical
+        annotations:
+          summary: "Memory usage on {{ $labels.instance }} above 95%"
+
+      - alert: HighDiskUsage
+        expr: (
+                100 -
+                (
+                  node_filesystem_avail_bytes{
+                    mountpoint="/",
+                    fstype!~"tmpfs|overlay"
+                  }
+                  /
+                  node_filesystem_size_bytes{
+                    mountpoint="/",
+                    fstype!~"tmpfs|overlay"
+                  } * 100
+                )
+              ) > 85
+        for: 10m
+        labels:
           severity: warning
         annotations:
-          summary: "Memory usage above 95%"
+          summary: "Disk usage on {{ $labels.instance }} above 85%"
 
-      - alert: DiskUsageHigh
+      - alert: VeryHighDiskUsage
         expr: (
                 100 -
                 (
@@ -63,6 +160,14 @@ groups:
               ) > 95
         for: 10m
         labels:
-          severity: warning
+          severity: critical
         annotations:
-          summary: "Disk usage above 95%"
+          summary: "Disk usage on {{ $labels.instance }} above 95%"
+
+      - alert: DiskSpaceLow
+        expr: node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay"} < 5 * 1024 * 1024 * 1024
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Less than 5GB disk space remaining on {{ $labels.instance }}"

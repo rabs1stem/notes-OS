@@ -1,4 +1,79 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    },
+    {
+      "name": "DS_LOKI",
+      "label": "loki",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "loki",
+      "pluginName": "Loki"
+    }
+  ],
+  "__elements": {},
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "12.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "logs",
+      "name": "Logs",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "loki",
+      "name": "Loki",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "piechart",
+      "name": "Pie chart",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -18,13 +93,13 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 7,
+  "id": null,
   "links": [],
   "panels": [
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -74,7 +149,11 @@
           "expr": "count(count(node_cpu_seconds_total) by (cpu))",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "🧵 Logical Threads",
@@ -83,7 +162,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -148,7 +227,11 @@
           "expr": "round(\n  100 * avg(rate(node_cpu_seconds_total{mode=\"iowait\"}[5m])) by (instance),\n  0.01\n)",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "⏳ I/O Wait",
@@ -157,7 +240,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -230,12 +313,16 @@
           "expr": "node_load1",
           "legendFormat": "1m",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ffnpzslp14pogd"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "node_load5",
@@ -248,7 +335,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ffnpzslp14pogd"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "node_load15",
@@ -265,7 +352,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -318,7 +405,11 @@
           "interval": "",
           "legendFormat": "Total",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "🧠 Total  RAM (GB)",
@@ -327,7 +418,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -377,7 +468,11 @@
           "expr": "node_filesystem_size_bytes{mountpoint=\"/\"}\n/\n1024 / 1024 / 1024",
           "legendFormat": "Used",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "💾 Disk Total (GB)",
@@ -386,7 +481,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -474,12 +569,16 @@
           "expr": "(\n  node_filesystem_size_bytes{mountpoint=\"/\"}\n-\n  node_filesystem_free_bytes{mountpoint=\"/\"}\n)\n/\n1024 / 1024 / 1024",
           "legendFormat": "Used",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ffnpzslp14pogd"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "node_filesystem_avail_bytes{mountpoint=\"/\",fstype!~\"tmpfs|overlay\"}\n/\n1024 / 1024 / 1024",
@@ -496,7 +595,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -549,7 +648,11 @@
           "expr": "100 - avg by (instance) (\n  rate(node_cpu_seconds_total{mode=\"idle\"}[1m])\n) * 100",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "⚙️ CPU",
@@ -558,7 +661,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -627,12 +730,16 @@
           "expr": "(\n  node_memory_MemTotal_bytes\n-\n  node_memory_MemAvailable_bytes\n)\n/\n1024 / 1024 / 1024",
           "legendFormat": "Used",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ffnpzslp14pogd"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "node_memory_MemTotal_bytes\n/\n1024 / 1024 / 1024",
@@ -667,7 +774,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -727,7 +834,11 @@
           "instant": false,
           "legendFormat": "{{name}}",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "🩺 Container",
@@ -736,7 +847,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -796,12 +907,16 @@
           "expr": "sum(container_memory_usage_bytes{name!=\"\"})\n/\n1024 / 1024 / 1024\n",
           "legendFormat": "Used by Containers",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         },
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "ffnpzslp14pogd"
+            "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
           "expr": "node_memory_MemTotal_bytes\n/\n1024 / 1024 / 1024",
@@ -832,7 +947,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -908,7 +1023,11 @@
           "expr": "sum by (name) (\n  rate(container_cpu_usage_seconds_total{name!=\"\"}[1m])\n) * 100 ",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "📊 Current State Containers CPU ",
@@ -917,7 +1036,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -993,7 +1112,11 @@
           "expr": "sum by (name) (\n  container_memory_working_set_bytes{name!=\"\"}\n) / 1024 / 1024",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "📊 Current State Containers RAM",
@@ -1002,7 +1125,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1064,7 +1187,11 @@
           "expr": "sum(\n  rate(container_cpu_usage_seconds_total{name!=\"\"}[1m])\n)\n/\ncount(count(node_cpu_seconds_total{mode=\"idle\"}) by (cpu))\n* 100",
           "legendFormat": "Used",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "🐳 Containers CPU",
@@ -1073,7 +1200,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1158,7 +1285,11 @@
           "instant": false,
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "🔍 RAM Usage by Container",
@@ -1167,7 +1298,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1250,7 +1381,11 @@
           "expr": "sum(container_memory_working_set_bytes{name!=\"\"}) / 1024 / 1024 / 1024",
           "legendFormat": "MEM",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "📈 Historical Trends Containers RAM",
@@ -1259,7 +1394,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1342,7 +1477,11 @@
           "expr": "topk(\n  5,\n  sum by(name) (\n    rate(container_cpu_usage_seconds_total{name!=\"\"}[1m])\n  ) * 100\n)",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "🔍 CPU Usage by Container",
@@ -1351,7 +1490,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1434,7 +1573,11 @@
           "expr": "sum(\n  rate(container_cpu_usage_seconds_total{name!=\"\"}[1m])\n)",
           "legendFormat": "CPU",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "📈 Historical Trends Containers CPU ",
@@ -1443,7 +1586,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1496,7 +1639,11 @@
           "expr": "sum by(name)(\n  rate(container_network_receive_bytes_total{name!=\"\"}[1m])\n) / 1024 ",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "📥 Incoming Traffic (KB/s)",
@@ -1505,7 +1652,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "bfob62j1jrytcf"
+        "uid": "${DS_PROMETHEUS}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1558,7 +1705,11 @@
           "expr": "sum by(name)(\n  rate(container_network_transmit_bytes_total{name!=\"\"}[1m])\n) / 1024 ",
           "legendFormat": "__auto",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          }
         }
       ],
       "title": "📤 Outgoing Traffic (KB/s)",
@@ -1567,11 +1718,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "ffob645u6qiv4e"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+        "uid": "${DS_LOKI}"
       },
       "gridPos": {
         "h": 11,
@@ -1596,7 +1743,7 @@
         {
           "datasource": {
             "type": "loki",
-            "uid": "ffob645u6qiv4e"
+            "uid": "${DS_LOKI}"
           },
           "direction": "backward",
           "editorMode": "code",
@@ -1611,7 +1758,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "ffob645u6qiv4e"
+        "uid": "${DS_LOKI}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1659,7 +1806,7 @@
         {
           "datasource": {
             "type": "loki",
-            "uid": "ffob645u6qiv4e"
+            "uid": "${DS_LOKI}"
           },
           "direction": "backward",
           "editorMode": "code",
@@ -1674,7 +1821,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "ffob645u6qiv4e"
+        "uid": "${DS_LOKI}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1725,7 +1872,7 @@
         {
           "datasource": {
             "type": "loki",
-            "uid": "ffob645u6qiv4e"
+            "uid": "${DS_LOKI}"
           },
           "direction": "backward",
           "editorMode": "code",
@@ -1741,11 +1888,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "ffob645u6qiv4e"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+        "uid": "${DS_LOKI}"
       },
       "gridPos": {
         "h": 19,
@@ -1761,7 +1904,7 @@
         "prettifyLogMessage": false,
         "showCommonLabels": false,
         "showLabels": false,
-        "showTime": true,
+        "showTime": false,
         "sortOrder": "Descending",
         "wrapLogMessage": false
       },
@@ -1770,11 +1913,11 @@
         {
           "datasource": {
             "type": "loki",
-            "uid": "ffob645u6qiv4e"
+            "uid": "${DS_LOKI}"
           },
           "direction": "backward",
           "editorMode": "code",
-          "expr": "{container=\"nginx-internal\"}\n|~ \"(502|503|504)\"",
+          "expr": "{container=\"nginx-internal\"}\n|~ \"(502|503|504|error)\"",
           "queryType": "range",
           "refId": "A"
         }
@@ -1785,7 +1928,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "ffob645u6qiv4e"
+        "uid": "${DS_LOKI}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1837,7 +1980,7 @@
         {
           "datasource": {
             "type": "loki",
-            "uid": "ffob645u6qiv4e"
+            "uid": "${DS_LOKI}"
           },
           "direction": "backward",
           "editorMode": "code",
@@ -1853,7 +1996,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "ffob645u6qiv4e"
+        "uid": "${DS_LOKI}"
       },
       "fieldConfig": {
         "defaults": {
@@ -1935,7 +2078,7 @@
         {
           "datasource": {
             "type": "loki",
-            "uid": "ffob645u6qiv4e"
+            "uid": "${DS_LOKI}"
           },
           "direction": "backward",
           "editorMode": "code",
@@ -1951,11 +2094,7 @@
     {
       "datasource": {
         "type": "loki",
-        "uid": "ffob645u6qiv4e"
-      },
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+        "uid": "${DS_LOKI}"
       },
       "gridPos": {
         "h": 11,
@@ -1980,7 +2119,7 @@
         {
           "datasource": {
             "type": "loki",
-            "uid": "ffob645u6qiv4e"
+            "uid": "${DS_LOKI}"
           },
           "direction": "backward",
           "editorMode": "code",
@@ -1993,19 +2132,13 @@
       "type": "logs"
     }
   ],
-  "preload": false,
   "refresh": "5s",
   "schemaVersion": 41,
   "tags": [],
   "templating": {
     "list": [
       {
-        "current": {
-          "text": "All",
-          "value": [
-            "$__all"
-          ]
-        },
+        "current": {},
         "definition": "label_values(container_last_seen,name)",
         "includeAll": true,
         "multi": true,
@@ -2030,5 +2163,6 @@
   "timezone": "browser",
   "title": "My Monitor",
   "uid": "c234b526-9e1b-45bc-95c1-f7d262b121ae",
-  "version": 37
+  "version": 35,
+  "weekStart": ""
 }
