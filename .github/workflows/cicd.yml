@@ -1,4 +1,4 @@
-name: ci
+name: ci/cd
 on:
   push:
     branches: [main, feature]
@@ -118,4 +118,23 @@ jobs:
           tags: |
               ghcr.io/rabs1stem/notes-os:${{github.sha}}
               ghcr.io/rabs1stem/notes-os:latest
-              
+             
+  # deploy:
+  #   if: github.ref == 'refs/heads/main'
+  #   needs: push-image
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #     - name: Deploy
+  #       uses: appleboy/ssh-action@v1.2.0
+  #       with:
+  #         host: ${{ secrets.SSH_HOST }}
+  #         username: ${{ secrets.SSH_USER }}
+  #         key: ${{ secrets.SSH_KEY }}
+  #         script: |
+  #               set -e
+  #               cd /opt/notes-os
+  #               docker compose pull
+  #               docker compose up -d
+  #               docker compose ps
+  #               curl -fsS http://127.0.0.1:8181/health
+

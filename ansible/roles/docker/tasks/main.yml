@@ -11,8 +11,14 @@
     state: started
     enabled: true
 
+- name: Install docker compose
+  apt:
+    name: docker-compose-v2
+    state: present
+
 - name: Add deploy to docker group
   user:
     name: deploy
     groups: docker
     append: true
+
