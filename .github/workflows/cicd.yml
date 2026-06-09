@@ -109,19 +109,43 @@ jobs:
           registry: ghcr.io
           username: ${{github.actor}}
           password: ${{secrets.GITHUB_TOKEN}}
-      - name: Build and Push image
+      - name: Build and Push backend
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile
+          file: ./app/backend/Dockerfile
           push: true
           provenance: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: |
-              ghcr.io/rabs1stem/notes-os:${{github.sha}}
-              ghcr.io/rabs1stem/notes-os:latest
-             
+              ghcr.io/rabs1stem/notes-backend:${{github.sha}}
+              ghcr.io/rabs1stem/notes-backend:latest
+      - name: Build and Push frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./app/frontend
+          file: Dockerfile
+          push: true
+          provenance: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+              ghcr.io/rabs1stem/notes-frontend:${{github.sha}}
+              ghcr.io/rabs1stem/notes-frontend:latest
+      - name: Build and Push nginx
+        uses: docker/build-push-action@v6
+        with:
+          context: ./nginx-docker
+          file: Dockerfile
+          push: true
+          provenance: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: |
+              ghcr.io/rabs1stem/notes-nginx:${{github.sha}}
+              ghcr.io/rabs1stem/notes-nginx:latest
+
   # deploy:
   #   if: github.ref == 'refs/heads/main'
   #   needs: push-image
