@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Secret scan
         uses: gitleaks/gitleaks-action@v2
-  note:
+  backend:
     needs: secrets
     runs-on: ubuntu-24.04
     steps:
@@ -33,12 +33,13 @@ jobs:
       - name: Run test
         env:
             PYTHONPATH: ${{ github.workspace }}
-        run: pytest app/tests -n auto --cov=. --cov-report=term-missing --asyncio-mode=auto -q
+        run: pytest /tests -n auto --cov=. --cov-report=term-missing --asyncio-mode=auto -q
+  
   docker:
-    needs: note
+    needs: backend
     runs-on: ubuntu-24.04
-
     steps:
+
       - uses: actions/checkout@v4
       - run: |
             cat > .env <<EOF
@@ -78,7 +79,7 @@ jobs:
       - name: Scan note image
         run: trivy image note_img:v1.0 --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
       - name: Scan nginx image
-        run: trivy image nginx:1.28-alpine --severity HIGH,CRITICAL --ignore-unfixed 
+        run: trivy image nginx:1.28-alpine --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
       - name: Scan postgres image
         run: trivy image postgres:17-bookworm --severity HIGH,CRITICAL --ignore-unfixed 
       - name: Scan redis image
