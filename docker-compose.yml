@@ -22,7 +22,7 @@ services:
   
   redis:
     container_name: redis
-    image: redis:7-alpine
+    image: redis:8-alpine
     restart: unless-stopped
     healthcheck:
       test: 
@@ -227,7 +227,7 @@ services:
 
   grafana:
     container_name: grafana
-    image: grafana/grafana:12.0.0
+    image: grafana/grafana:12.1.0
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -256,7 +256,7 @@ services:
  
   loki:
     container_name: loki
-    image: grafana/loki:3.4.2
+    image: grafana/loki:3.5.1
     restart: unless-stopped
     expose:
       - 3100
@@ -269,7 +269,7 @@ services:
 
   promtail:
     container_name: promtail
-    image: grafana/promtail:3.4.2
+    image: grafana/promtail:3.5.1
     restart: unless-stopped
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
