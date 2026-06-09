@@ -1,5 +1,5 @@
 FROM nginx:1.28-alpine
-RUN apk update && apk upgrade --available --no-cache
+RUN apk update && apk add --no-cache --upgrade nginx
 COPY . /usr/share/nginx/html/
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
