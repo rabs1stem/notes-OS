@@ -61,8 +61,7 @@ jobs:
             envsubst < monitoring/alertmanager.yml.tpl > monitoring/alertmanager.yml
       - name: Validate compose config
         run: docker compose config
-      - run: docker compose build --no-cache --pull
-      - run: docker compose up -d 
+      - run: docker compose up -d --build
       - run: |
           for i in {1..30}; do
             curl -fsS http://127.0.0.1:8181/health && exit 0
