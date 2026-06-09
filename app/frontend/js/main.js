@@ -93,7 +93,7 @@ function formatApiError(detail) {
 }
 
 async function api(path, options = {}) {
-    const response = await fetch(path, {
+    const response = await fetch(`/api${path}`, {
         method: options.method || "GET",
         headers: { "Content-Type": "application/json", ...(options.headers || {}) },
         credentials: "include",

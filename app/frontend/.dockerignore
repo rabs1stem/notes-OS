@@ -1,0 +1,13 @@
+.git
+.github
+.env
+.env.tpl
+notes.db
+app/backend/
+monitoring/
+ansible/
+nginx-edge/
+nginx-internal/
+nginx-docker/
+tests/
+My Monitor.json

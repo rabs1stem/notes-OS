@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+tests/
+.git
+.github
+.env
+.env.tpl
+notes.db
+app/frontend/
+monitoring/
+ansible/
+nginx-edge/
+nginx-internal/
+nginx-docker/
+My Monitor.json

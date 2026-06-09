@@ -13,7 +13,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 WORKDIR /app
 COPY --from=builder /install /usr/local
-COPY app ./app
+COPY app/backend ./app
 RUN apt-get update && apt-get upgrade -y --no-install-recommends \
 && groupadd --system app && useradd --system --gid app app \
 && mkdir -p /app/data && chown -R app:app ./ \
@@ -22,4 +22,4 @@ USER app
 EXPOSE 8000
 HEALTHCHECK --interval=20s --timeout=5s --start-period=7s --retries=3 \
 CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+CMD ["gunicorn", "app.main:app", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000", "--workers", "1"]

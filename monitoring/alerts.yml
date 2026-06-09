@@ -50,21 +50,29 @@ groups:
         annotations:
           summary: "Container redis is down"
 
-      - alert: Note1Down
-        expr: absent(container_last_seen{name="note1"})
+      - alert: Backend1Down
+        expr: absent(container_last_seen{name="backend1"})
         for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "Container note1 is down"
+          summary: "Container backend1 is down"
 
-      - alert: Note2Down
+      - alert: Backend2Down
         expr: absent(container_last_seen{name="note2"})
         for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "Container note2 is down"
+          summary: "Container backend2 is down"
+
+      - alert: Frontend2Down
+        expr: absent(container_last_seen{name="frontend"})
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container frontend is down"
 
       - alert: Nging-edgeDown
         expr: absent(container_last_seen{name="nginx-edge"})

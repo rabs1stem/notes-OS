@@ -4,9 +4,7 @@ import hashlib
 import os
 import secrets
 
-from fastapi import Cookie, Depends, FastAPI, HTTPException, Request, Response, status
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from fastapi import Cookie, Depends, FastAPI, HTTPException, Response, status
 from redis import Redis
 from redis.exceptions import RedisError
 from sqlalchemy.orm import Session
@@ -16,8 +14,6 @@ from app.models import Note, User
 from app.schemas import AuthPayload, NotePayload, RegisterPayload
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-templates = Jinja2Templates(directory="app/templates")
 
 SESSION_COOKIE = "notes_session"
 SESSION_TTL_SECONDS = int(os.getenv("SESSION_TTL_SECONDS", str(60 * 60 * 24 * 7)))
@@ -74,10 +70,6 @@ def get_user_or_401(notes_session: str | None, db: Session) -> User:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     return user
 
-
-@app.get("/")
-def home(request: Request):
-    return templates.TemplateResponse(request=request, name="index.html", context={})
 
 
 @app.post("/register")
