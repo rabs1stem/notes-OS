@@ -40,6 +40,24 @@ services:
     networks:
       - my
   
+  migrate:
+    image: backend:v1.0
+    build:
+      context: .
+      dockerfile: ./app/backend/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      - alembic
+      - upgrade
+      - head
+    restart: "no"
+    networks:
+      - my
+
   backend1:
     container_name: backend1
     image: backend:v1.0
@@ -54,8 +72,8 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     healthcheck:
       test:
         - CMD
@@ -92,8 +110,8 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     healthcheck:
       test:
         - CMD

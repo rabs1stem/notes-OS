@@ -20,9 +20,6 @@ SESSION_TTL_SECONDS = int(os.getenv("SESSION_TTL_SECONDS", str(60 * 60 * 24 * 7)
 REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
 redis_client = Redis.from_url(REDIS_URL, decode_responses=True)
 
-# Ensure DB tables exist.
-Base.metadata.create_all(bind=engine)
-
 
 def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
