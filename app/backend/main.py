@@ -9,7 +9,7 @@ from redis import Redis
 from redis.exceptions import RedisError
 from sqlalchemy.orm import Session
 
-from .database import Base, engine, get_db
+from .database import get_db
 from .models import Note, User
 from .schemas import AuthPayload, NotePayload, RegisterPayload
 
