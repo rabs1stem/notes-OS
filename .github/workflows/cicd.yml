@@ -91,7 +91,7 @@ jobs:
       - name: Scan postgres image
         run: trivy image postgres:17-bookworm --severity HIGH,CRITICAL --ignore-unfixed 
       - name: Scan redis image
-        run: trivy image redis:7-alpine --severity HIGH,CRITICAL --ignore-unfixed
+        run: trivy image redis:8-alpine --severity HIGH,CRITICAL --ignore-unfixed
 
       - if: always()
         run: |
@@ -131,7 +131,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./app/frontend
-          file: Dockerfile
+          file: ./app/frontend/Dockerfile
           push: true
           provenance: true
           cache-from: type=gha
@@ -143,7 +143,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: ./nginx-docker
-          file: Dockerfile
+          file: ./nginx-docker/Dockerfile
           push: true
           provenance: true
           cache-from: type=gha
