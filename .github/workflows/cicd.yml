@@ -76,10 +76,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y trivy
-      - name: Scan note image
-        run: trivy image note_img:v1.0 --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+      - name: Scan backend image
+        run: trivy image backend:v1.0 --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
       - name: Scan nginx image
-        run: trivy image nginx:1.28-alpine --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+        run: trivy image nginx-custom:v1 --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
+      - name: Scan frontend image
+        run: trivy image frontend:v1.0 --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1
       - name: Scan postgres image
         run: trivy image postgres:17-bookworm --severity HIGH,CRITICAL --ignore-unfixed 
       - name: Scan redis image
