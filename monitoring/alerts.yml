@@ -59,7 +59,7 @@ groups:
           summary: "Container backend1 is down"
 
       - alert: Backend2Down
-        expr: absent(container_last_seen{name="note2"})
+        expr: absent(container_last_seen{name="backend2"})
         for: 2m
         labels:
           severity: critical
