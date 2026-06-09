@@ -9,9 +9,9 @@ from redis import Redis
 from redis.exceptions import RedisError
 from sqlalchemy.orm import Session
 
-from app.database import Base, engine, get_db
-from app.models import Note, User
-from app.schemas import AuthPayload, NotePayload, RegisterPayload
+from .database import Base, engine, get_db
+from .models import Note, User
+from .schemas import AuthPayload, NotePayload, RegisterPayload
 
 app = FastAPI()
 
