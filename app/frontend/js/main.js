@@ -28,12 +28,13 @@ const themeOverlay = document.getElementById("theme-overlay")
 const themeModal = document.getElementById("theme-modal")
 const themeClose = document.getElementById("theme-close")
 
-const themeMonitorBtn = document.getElementById("theme-monitor")
+const themeDefaultBtn = document.getElementById("theme-default")
+const themeCyberBtn = document.getElementById("theme-cyber")
 const themeCoffeeBtn = document.getElementById("theme-coffee")
 
 let zIndex = 1
 let currentUser = null
-let currentTheme = "monitor"
+let currentTheme = "default"
 
 function buildCrystalLogo() {
     const text = logo.textContent.trim()
@@ -129,9 +130,57 @@ function clearCoffeeBeans() {
     container.innerHTML = ""
 }
 
+function createCyberParticles() {
+
+    const container =
+        document.getElementById("cyber-particles")
+
+    if (!container) return
+
+    container.innerHTML = ""
+
+    for (let i = 0; i < 40; i++) {
+
+        const particle =
+            document.createElement("div")
+
+        particle.className =
+            "cyber-particle"
+
+        particle.style.left =
+            `${Math.random() * 100}%`
+
+        particle.style.height =
+            `${20 + Math.random() * 120}px`
+
+        particle.style.opacity =
+            `${0.15 + Math.random() * 0.6}`
+
+        particle.style.animationDuration =
+            `${8 + Math.random() * 12}s`
+
+        particle.style.animationDelay =
+            `-${Math.random() * 20}s`
+
+        container.appendChild(particle)
+    }
+}
+
+function clearCyberParticles() {
+
+    const container =
+        document.getElementById("cyber-particles")
+
+    if (!container) return
+
+    container.innerHTML = ""
+}
+
 function applyTheme(theme) {
+
     document.body.classList.remove(
-        "theme-monitor",
+        "theme-default",
+        "theme-cyber",
         "theme-coffee"
     )
 
@@ -139,10 +188,15 @@ function applyTheme(theme) {
 
     currentTheme = theme
 
+    clearCoffeeBeans()
+    clearCyberParticles()
+
     if (theme === "coffee") {
         createCoffeeBeans()
-    } else {
-        clearCoffeeBeans()
+    }
+
+    if (theme === "cyber") {
+        createCyberParticles()
     }
 }
 
@@ -489,7 +543,7 @@ async function loadNotes() {
 
         currentUser = data.username
 
-        applyTheme(data.theme || "monitor")
+        applyTheme(data.theme || "default")
 
         updateAuthUi()
 
@@ -497,7 +551,7 @@ async function loadNotes() {
     } catch {
         currentUser = null
 
-        applyTheme("monitor")
+        applyTheme("default")
 
         updateAuthUi()
 
@@ -559,6 +613,9 @@ async function handleLogout() {
         // User session is removed on backend; frontend clears user-bound notes.
         currentUser = null
         clearNotes()
+
+        applyTheme("default")
+
         updateAuthUi()
     }
 }
@@ -607,19 +664,33 @@ function bindUiEvents() {
         }
     })
 
-    themeMonitorBtn.addEventListener("click", async () => {
+    themeDefaultBtn.addEventListener("click", async () => {
         try {
             await api("/theme", {
                 method: "POST",
                 body: {
-                    theme: "monitor"
+                    theme: "default"
                 }
             })
         } catch {}
 
-    applyTheme("monitor")
-    closeThemeModal()
-})
+        applyTheme("default")
+        closeThemeModal()
+    })
+
+    themeCyberBtn.addEventListener("click", async () => {
+        try {
+            await api("/theme", {
+                method: "POST",
+                body: {
+                    theme: "cyber"
+                }
+            })
+        } catch {}
+
+        applyTheme("cyber")
+        closeThemeModal()
+    })
 
     themeCoffeeBtn.addEventListener("click", async () => {
         try {
@@ -650,3 +721,4 @@ buildCrystalLogo()
 bindUiEvents()
 updateAuthUi()
 loadNotes()
+

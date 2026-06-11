@@ -16,12 +16,22 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    background:radial-gradient(circle at top,#1a1e24 0%,#15191e 42%,#101318 76%,#0b0d11 100%);
+
     font-family:Inter,Arial,sans-serif;
     color:var(--text);
 }
 
-body::before{
+body.theme-default{
+    background:radial-gradient(
+        circle at top,
+        #1a1e24 0%,
+        #15191e 42%,
+        #101318 76%,
+        #0b0d11 100%
+    );
+}
+
+body.theme-default::before{
     content:"";
     position:absolute;
     inset:0;
@@ -549,12 +559,28 @@ body.theme-coffee .crystal-letter{
     --tube-edge:#cdb38d;
     --tube-glow:transparent;
 
-    opacity:.92;
+    animation:
+        coffeeGlow 8s ease-in-out infinite;
+}
 
-    filter:
-        saturate(.75)
-        brightness(.92)
-        contrast(.95);
+@keyframes coffeeGlow{
+
+    0%,100%{
+        opacity:.35;
+
+        filter:
+            brightness(.75)
+            saturate(.6);
+    }
+
+    50%{
+        opacity:1;
+
+        filter:
+            brightness(1.15)
+            saturate(.9)
+            drop-shadow(0 0 10px rgba(220,190,150,.25));
+    }
 }
 
 /* мягкая тень под логотипом */
@@ -799,4 +825,394 @@ body.theme-coffee #theme-overlay{
     backdrop-filter:blur(12px);
 
     background:rgba(20,12,8,.45);
+}
+
+/* =========================================
+   CYBER THEME
+   ========================================= */
+
+body.theme-cyber{
+    background:
+        radial-gradient(
+            circle at top,
+            #241833 0%,
+            #171c2c 45%,
+            #0c1018 100%
+        );
+}
+
+body.theme-cyber::before{
+    content:"";
+    position:fixed;
+    inset:0;
+
+    pointer-events:none;
+
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(80,120,255,.08),
+            transparent 35%
+        ),
+        radial-gradient(
+            circle at 80% 30%,
+            rgba(255,70,120,.06),
+            transparent 40%
+        ),
+        radial-gradient(
+            circle at 50% 85%,
+            rgba(150,80,255,.07),
+            transparent 45%
+        );
+
+    filter:blur(70px);
+}
+
+body.theme-cyber .new-note-btn,
+body.theme-cyber .auth-btn,
+body.theme-cyber .theme-btn,
+body.theme-cyber .user-chip{
+    background:
+        linear-gradient(
+            145deg,
+            rgba(35,45,95,.9),
+            rgba(55,25,75,.9)
+        );
+
+    border:1px solid rgba(130,120,255,.25);
+}
+
+body.theme-cyber .note{
+    background:
+        linear-gradient(
+            145deg,
+            rgba(32,26,58,.85),
+            rgba(15,20,42,.85)
+        );
+
+    border:1px solid rgba(120,120,255,.22);
+
+    box-shadow:
+        0 0 20px rgba(90,120,255,.12),
+        0 0 35px rgba(255,70,120,.08);
+}
+
+body.theme-cyber .note-name,
+body.theme-cyber textarea{
+    color:#eef1ff;
+}
+
+/* =========================================
+   CYBER THEME MODAL
+   ========================================= */
+
+body.theme-cyber #theme-modal{
+    background:
+        linear-gradient(
+            145deg,
+            rgba(18,20,34,.96),
+            rgba(12,14,24,.98)
+        );
+
+    border:1px solid rgba(120,140,255,.22);
+
+    box-shadow:
+        0 0 25px rgba(90,120,255,.18),
+        0 0 60px rgba(160,70,255,.10),
+        0 25px 60px rgba(0,0,0,.55);
+}
+
+body.theme-cyber #theme-modal h2{
+    color:#edf1ff;
+    letter-spacing:3px;
+}
+
+body.theme-cyber #theme-modal .auth-submit{
+    background:
+        linear-gradient(
+            135deg,
+            rgba(70,110,255,.85),
+            rgba(155,80,255,.85)
+        );
+
+    border:1px solid rgba(150,120,255,.25);
+
+    color:white;
+}
+
+body.theme-cyber #theme-modal .auth-submit:hover{
+    box-shadow:
+        0 0 15px rgba(110,130,255,.35),
+        0 0 30px rgba(180,90,255,.20);
+}
+
+body.theme-cyber #theme-modal .auth-close{
+    color:#cfd8ff;
+}
+
+body.theme-cyber #theme-overlay{
+    background:
+        rgba(5,7,15,.55);
+
+    backdrop-filter:blur(12px);
+}
+
+/* =========================================
+   CYBER THEME MODAL = NOTE STYLE
+   ========================================= */
+
+body.theme-cyber #theme-modal{
+    position:relative;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(32,26,58,.88),
+            rgba(15,20,42,.88)
+        );
+
+    border:1px solid rgba(120,120,255,.22);
+
+    border-radius:24px;
+
+    backdrop-filter:blur(18px) saturate(145%);
+
+    box-shadow:
+        0 18px 40px rgba(0,0,0,.38),
+        0 0 0 1px rgba(120,215,255,.12),
+        0 0 30px rgba(125,249,255,.08);
+}
+
+body.theme-cyber #theme-modal::before{
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    border-radius:24px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.12),
+            transparent 40%
+        );
+
+    pointer-events:none;
+}
+
+body.theme-cyber #theme-modal h2{
+    color:#eef1ff;
+
+    font-size:14px;
+
+    letter-spacing:2px;
+
+    font-weight:500;
+}
+
+body.theme-cyber #theme-modal .auth-submit{
+    height:46px;
+
+    border-radius:12px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(60,70,140,.75),
+            rgba(35,40,90,.75)
+        );
+
+    border:1px solid rgba(150,170,255,.18);
+
+    color:#eef1ff;
+
+    transition:.2s ease;
+}
+
+body.theme-cyber #theme-modal .auth-submit:hover{
+    transform:translateY(-1px);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(75,90,170,.82),
+            rgba(45,55,120,.82)
+        );
+
+    box-shadow:
+        0 0 18px rgba(120,150,255,.18);
+}
+
+body.theme-cyber #theme-modal .auth-close{
+    color:#d9e2ff;
+
+    opacity:.8;
+}
+
+body.theme-cyber #theme-modal .auth-close:hover{
+    opacity:1;
+}
+
+body.theme-cyber #theme-overlay{
+    background:rgba(5,7,15,.55);
+
+    backdrop-filter:blur(12px);
+}
+
+/* =========================================
+   CYBER LOGO
+   ========================================= */
+
+body.theme-cyber .crystal-letter{
+
+    position:relative;
+
+    color:#eafcff;
+
+    opacity:.95;
+
+    filter:
+        drop-shadow(0 0 3px rgba(255,255,255,.8))
+        drop-shadow(0 0 8px rgba(125,249,255,.9))
+        drop-shadow(0 0 18px rgba(125,249,255,.7))
+        drop-shadow(0 0 40px rgba(125,249,255,.35));
+
+    transition:
+        opacity .4s ease,
+        filter .4s ease;
+}
+
+body.theme-cyber .crystal-letter::before,
+body.theme-cyber .crystal-letter::after{
+    display:none;
+}
+
+/* обычная буква */
+
+body.theme-cyber .crystal-letter[data-mode="steady"]{
+    opacity:1;
+}
+
+/* лёгкое мерцание */
+
+body.theme-cyber .crystal-letter[data-mode="blink"]{
+    animation:
+        cyberBlink 3s infinite;
+}
+
+/* плавное дыхание */
+
+body.theme-cyber .crystal-letter[data-mode="pulse"]{
+    animation:
+        cyberPulse 4s infinite ease-in-out;
+}
+
+/* немного тусклая */
+
+body.theme-cyber .crystal-letter[data-mode="dim"]{
+    opacity:.55;
+
+    filter:
+        drop-shadow(0 0 2px rgba(255,255,255,.4))
+        drop-shadow(0 0 6px rgba(125,249,255,.45));
+}
+
+/* средняя яркость */
+
+body.theme-cyber .crystal-letter[data-mode="half"]{
+    opacity:.75;
+
+    filter:
+        drop-shadow(0 0 3px rgba(255,255,255,.6))
+        drop-shadow(0 0 8px rgba(125,249,255,.6))
+        drop-shadow(0 0 16px rgba(125,249,255,.3));
+}
+
+@keyframes cyberPulse{
+
+    0%,100%{
+        opacity:.75;
+
+        filter:
+            drop-shadow(0 0 3px rgba(255,255,255,.6))
+            drop-shadow(0 0 8px rgba(125,249,255,.6))
+            drop-shadow(0 0 16px rgba(125,249,255,.3));
+    }
+
+    50%{
+        opacity:1;
+
+        filter:
+            drop-shadow(0 0 4px rgba(255,255,255,.9))
+            drop-shadow(0 0 12px rgba(125,249,255,1))
+            drop-shadow(0 0 28px rgba(125,249,255,.8))
+            drop-shadow(0 0 60px rgba(125,249,255,.4));
+    }
+}
+
+@keyframes cyberBlink{
+
+    0%,92%,100%{
+        opacity:1;
+    }
+
+    94%{
+        opacity:.25;
+    }
+
+    97%{
+        opacity:.55;
+    }
+}
+
+/* =========================================
+   CYBER PARTICLES
+   ========================================= */
+
+#cyber-particles{
+    position:fixed;
+    inset:0;
+
+    overflow:hidden;
+
+    pointer-events:none;
+
+    z-index:0;
+}
+
+.cyber-particle{
+    position:absolute;
+
+    width:2px;
+
+    border-radius:999px;
+
+    background:
+        linear-gradient(
+            to top,
+            transparent,
+            rgba(125,249,255,.9),
+            transparent
+        );
+
+    box-shadow:
+        0 0 8px rgba(125,249,255,.9),
+        0 0 20px rgba(125,249,255,.4);
+
+    animation:
+        cyberRise linear infinite;
+}
+
+@keyframes cyberRise{
+
+    from{
+        transform:
+            translateY(120vh);
+    }
+
+    to{
+        transform:
+            translateY(-150px);
+    }
 }

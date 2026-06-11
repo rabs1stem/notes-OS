@@ -33,8 +33,8 @@ class User(Base):
     theme = Column(
         String,
         nullable=False,
-        default="monitor",
-        server_default="monitor"
+        default="default",
+        server_default="default"
     )
 
     # relationship:
