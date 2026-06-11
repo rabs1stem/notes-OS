@@ -22,8 +22,18 @@ const registerConfirm = document.getElementById("register-confirm")
 const registerSubmit = document.getElementById("register-submit")
 const openLogin = document.getElementById("open-login")
 
+const themeBtn = document.getElementById("theme-btn")
+
+const themeOverlay = document.getElementById("theme-overlay")
+const themeModal = document.getElementById("theme-modal")
+const themeClose = document.getElementById("theme-close")
+
+const themeMonitorBtn = document.getElementById("theme-monitor")
+const themeCoffeeBtn = document.getElementById("theme-coffee")
+
 let zIndex = 1
 let currentUser = null
+let currentTheme = "monitor"
 
 function buildCrystalLogo() {
     const text = logo.textContent.trim()
@@ -58,6 +68,84 @@ function closeAuthModal() {
     showAuthMessage("")
 }
 
+function openThemeModal() {
+    themeOverlay.classList.remove("hidden")
+    themeModal.classList.add("pop")
+}
+
+function closeThemeModal() {
+    themeOverlay.classList.add("hidden")
+    themeModal.classList.remove("pop")
+}
+
+function createCoffeeBeans() {
+    let container = document.getElementById("coffee-beans")
+
+    if (!container) return
+
+    container.innerHTML = ""
+
+    for (let i = 0; i < 20; i++) {
+        const bean = document.createElement("div")
+
+        bean.className = "bean"
+
+        bean.style.animationDuration =
+            `${25 + Math.random() * 20}s, ${8 + Math.random() * 15}s`
+
+        bean.style.filter =
+            `drop-shadow(0 0 ${2 + Math.random() * 4}px rgba(205,170,120,.12))`
+
+        bean.style.left = `${Math.random() * 100}%`
+
+        /* старт по всей высоте */
+        bean.style.top = `${Math.random() * 100}%`
+
+        /* разный размер */
+        const scale = 0.8 + Math.random() * 1.8
+
+        bean.style.transform =
+            `scale(${scale}) rotate(${Math.random() * 360}deg)`
+
+        /* разная скорость */
+        bean.style.animationDuration =
+            `${25 + Math.random() * 20}s`
+
+        bean.style.animationDelay =
+            `-${Math.random() * 25}s`
+
+        bean.style.opacity =
+            `${0.18 + Math.random() * 0.25}`
+
+        container.appendChild(bean)
+    }
+}
+
+function clearCoffeeBeans() {
+    const container = document.getElementById("coffee-beans")
+
+    if (!container) return
+
+    container.innerHTML = ""
+}
+
+function applyTheme(theme) {
+    document.body.classList.remove(
+        "theme-monitor",
+        "theme-coffee"
+    )
+
+    document.body.classList.add(`theme-${theme}`)
+
+    currentTheme = theme
+
+    if (theme === "coffee") {
+        createCoffeeBeans()
+    } else {
+        clearCoffeeBeans()
+    }
+}
+
 function showAuthView(mode) {
     const isLogin = mode === "login"
     loginView.classList.toggle("hidden", !isLogin)
@@ -67,15 +155,21 @@ function showAuthView(mode) {
 
 function updateAuthUi() {
     const isLogged = Boolean(currentUser)
+
     newNoteBtn.disabled = !isLogged
 
     if (isLogged) {
         authBtn.textContent = "LOGOUT"
+
         userChip.textContent = `@${currentUser}`
+
         userChip.classList.remove("hidden")
+        themeBtn.classList.remove("hidden")
     } else {
         authBtn.textContent = "AUTH"
+
         userChip.classList.add("hidden")
+        themeBtn.classList.add("hidden")
     }
 }
 
@@ -389,14 +483,24 @@ function escapeHtml(text) {
 
 async function loadNotes() {
     clearNotes()
+
     try {
         const data = await api("/notes")
+
         currentUser = data.username
+
+        applyTheme(data.theme || "monitor")
+
         updateAuthUi()
+
         data.notes.forEach((note) => createNoteElement(note))
     } catch {
         currentUser = null
+
+        applyTheme("monitor")
+
         updateAuthUi()
+
         clearNotes()
     }
 }
@@ -493,6 +597,44 @@ function bindUiEvents() {
     loginSubmit.addEventListener("click", handleLogin)
     registerSubmit.addEventListener("click", handleRegister)
 
+    themeBtn.addEventListener("click", openThemeModal)
+
+    themeClose.addEventListener("click", closeThemeModal)
+
+    themeOverlay.addEventListener("click", (e) => {
+        if (e.target === themeOverlay) {
+            closeThemeModal()
+        }
+    })
+
+    themeMonitorBtn.addEventListener("click", async () => {
+        try {
+            await api("/theme", {
+                method: "POST",
+                body: {
+                    theme: "monitor"
+                }
+            })
+        } catch {}
+
+    applyTheme("monitor")
+    closeThemeModal()
+})
+
+    themeCoffeeBtn.addEventListener("click", async () => {
+        try {
+            await api("/theme", {
+                method: "POST",
+                body: {
+                    theme: "coffee"
+                }
+            })
+        } catch {}
+
+    applyTheme("coffee")
+    closeThemeModal()
+})
+
     window.addEventListener("resize", () => {
         document.querySelectorAll(".note").forEach((note) => {
             const maxLeft = Math.max(0, window.innerWidth - note.offsetWidth)
@@ -504,6 +646,7 @@ function bindUiEvents() {
 }
 
 buildCrystalLogo()
+
 bindUiEvents()
 updateAuthUi()
 loadNotes()

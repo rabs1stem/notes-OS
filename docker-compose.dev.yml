@@ -1,9 +1,55 @@
 services:
+  postgres:
+    container_name: postgres
+    image: postgres:17-bookworm
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    env_file:
+      - .env
+    healthcheck:
+      test: 
+        - CMD-SHELL
+        - pg_isready -U not_user -d not_db
+      interval: 20s
+      timeout: 5s
+      retries: 3
+      start_period: 7s
+    expose:
+      - 5432
+  
+  migrate:
+    image: backend:v1.0
+    build:
+      context: .
+      dockerfile: ./app/backend/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      - alembic
+      - upgrade
+      - head
+    restart: "no"
+
   backend1:
+    container_name: backend1
+    image: backend:v1.0
+    build:
+      context: .
+      dockerfile: ./app/backend/Dockerfile
     volumes:
       - ./alembic:/app/alembic
       - ./alembic.ini:/app/alembic.ini
-  backend2:
-    volumes:
-      - ./alembic:/app/alembic
-      - ./alembic.ini:/app/alembic.ini
+    expose:
+      - 8000
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+volumes:
+  postgres_data:

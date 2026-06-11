@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from .database import get_db
 from .models import Note, User
-from .schemas import AuthPayload, NotePayload, RegisterPayload
+from .schemas import AuthPayload, NotePayload, RegisterPayload, ThemePayload
 
 app = FastAPI()
 
@@ -104,7 +104,7 @@ def login(payload: AuthPayload, response: Response, db: Session = Depends(get_db
         secure=False,
         max_age=60 * 60 * 24 * 7,
     )
-    return {"ok": True, "username": username}
+    return {"ok": True, "username": username, "theme": user.theme}
 
 
 @app.post("/logout")
@@ -135,6 +135,7 @@ def get_notes(notes_session: str | None = Cookie(default=None), db: Session = De
             for note in notes
         ],
         "username": user.username,
+        "theme": user.theme,
     }
 
 
@@ -220,3 +221,20 @@ def delete_note(note_id: int, notes_session: str | None = Cookie(default=None), 
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+@app.post("/theme")
+def set_theme(
+    payload: ThemePayload,
+    notes_session: str | None = Cookie(default=None),
+    db: Session = Depends(get_db),
+):
+    user = get_user_or_401(notes_session, db)
+
+    user.theme = payload.theme
+
+    db.commit()
+
+    return {
+        "ok": True,
+        "theme": user.theme
+    }

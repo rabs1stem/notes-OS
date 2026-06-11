@@ -30,6 +30,13 @@ class User(Base):
         nullable=False
     )
 
+    theme = Column(
+        String,
+        nullable=False,
+        default="monitor",
+        server_default="monitor"
+    )
+
     # relationship:
     # user.notes -> all notes of this user
     notes = relationship(

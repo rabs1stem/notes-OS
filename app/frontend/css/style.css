@@ -495,3 +495,308 @@ body::before{
 
     .drag-zone{right:58px;height:18px}
 }
+
+.theme-btn{
+    min-width:58px;
+    height:54px;
+
+    padding:0 16px;
+
+    border:none;
+    border-radius:16px;
+
+    background:var(--glass-bg);
+    border:1px solid var(--glass-border);
+
+    backdrop-filter:blur(16px) saturate(130%);
+
+    color:var(--text);
+
+    cursor:pointer;
+
+    transition:.2s ease;
+
+    box-shadow:0 0 24px rgba(120,220,255,0.1);
+
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:1px;
+}
+
+.theme-btn:hover{
+    transform:translateY(-1px);
+    background:rgba(255,255,255,0.13);
+}
+
+/* =========================================
+   COFFEE LOGO
+   ========================================= */
+
+body.theme-coffee .logo{
+    position:relative;
+
+    color:#ead7bb;
+
+    text-shadow:
+        0 2px 4px rgba(0,0,0,.25),
+        0 6px 20px rgba(0,0,0,.35);
+
+    filter:none;
+}
+
+body.theme-coffee .crystal-letter{
+    --tube-color:#d8c2a2;
+    --tube-edge:#cdb38d;
+    --tube-glow:transparent;
+
+    opacity:.92;
+
+    filter:
+        saturate(.75)
+        brightness(.92)
+        contrast(.95);
+}
+
+/* мягкая тень под логотипом */
+
+body.theme-coffee .logo::after{
+    content:"";
+
+    position:absolute;
+
+    left:50%;
+    top:100%;
+
+    width:320px;
+    height:40px;
+
+    transform:translateX(-50%);
+
+    background:
+        radial-gradient(
+            rgba(0,0,0,.25),
+            transparent 70%
+        );
+
+    filter:blur(18px);
+
+    pointer-events:none;
+}
+
+body.theme-coffee{
+    background:
+        radial-gradient(
+            circle at top,
+            rgba(120,75,45,.08),
+            transparent 30%
+        ),
+
+        linear-gradient(
+            180deg,
+            #1a120d 0%,
+            #120d09 60%,
+            #0b0807 100%
+        );
+}
+
+body.theme-coffee .new-note-btn,
+body.theme-coffee .auth-btn,
+body.theme-coffee .theme-btn,
+body.theme-coffee .user-chip{
+    background:
+        linear-gradient(
+            180deg,
+            rgba(75,50,35,.95),
+            rgba(50,33,24,.95)
+        );
+
+    border:1px solid rgba(190,145,95,.18);
+
+    color:#ecd8b7;
+}
+
+body.theme-coffee .note{
+    background:
+        linear-gradient(
+            180deg,
+            #5f4332 0%,
+            #4a3427 100%
+        );
+
+    border:1px solid rgba(205,170,120,.15);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.35);
+
+
+}
+
+
+
+body.theme-coffee .note::before{
+    content:"";
+
+    position:absolute;
+    inset:0;
+
+    pointer-events:none;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 22px,
+            rgba(255,255,255,.015) 23px
+        );
+}
+
+body.theme-coffee .note-name{
+    color:#f2dfc0;
+}
+
+body.theme-coffee textarea{
+    color:#ead8bb !important;
+}
+
+.bean{
+    position:absolute;
+
+    width:18px;
+    height:26px;
+
+    background:
+        radial-gradient(
+            circle at 35% 35%,
+            rgba(255,255,255,.12),
+            transparent 35%
+        ),
+        linear-gradient(
+            145deg,
+            #6b4128,
+            #4b2d1b 45%,
+            #2f1b10 100%
+        );
+
+    border-radius:50% 50% 45% 45%;
+
+    box-shadow:
+        inset -2px -2px 4px rgba(0,0,0,.35),
+        inset 2px 2px 4px rgba(255,255,255,.05),
+        0 2px 6px rgba(0,0,0,.25);
+
+    animation:
+    beanFloat linear infinite,
+    beanSpin 12s linear infinite;
+
+    filter:
+    drop-shadow(0 0 4px rgba(205,170,120,.12));
+}
+
+@keyframes beanSpin{
+    from{
+        rotate:0deg;
+    }
+
+    to{
+        rotate:360deg;
+    }
+}
+
+body.theme-coffee::before{
+    content:"";
+
+    position:fixed;
+    inset:-20%;
+
+    pointer-events:none;
+
+    background:
+        radial-gradient(
+            circle at 30% 40%,
+            rgba(255,255,255,.015),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 70% 60%,
+            rgba(255,255,255,.012),
+            transparent 35%
+        );
+
+    filter:blur(80px);
+
+    animation:coffeeFog 30s linear infinite;
+}
+
+@keyframes coffeeFog{
+    from{
+        transform:translateX(-30px);
+    }
+
+    to{
+        transform:translateX(30px);
+    }
+}
+
+/* =========================================
+   COFFEE THEME MODAL
+   ========================================= */
+
+body.theme-coffee #theme-modal{
+    background:
+        linear-gradient(
+            180deg,
+            rgba(78,54,38,.98),
+            rgba(42,29,22,.98)
+        );
+
+    border:1px solid rgba(190,145,95,.25);
+
+    box-shadow:
+        0 25px 60px rgba(0,0,0,.65);
+}
+
+body.theme-coffee #theme-modal h2{
+    color:#ecd8b7;
+
+    letter-spacing:3px;
+}
+
+body.theme-coffee #theme-modal .auth-submit{
+    background:
+        linear-gradient(
+            180deg,
+            rgba(115,82,58,.95),
+            rgba(78,55,40,.95)
+        );
+
+    border:1px solid rgba(205,170,120,.25);
+
+    color:#f3dfc0;
+
+    transition:.2s ease;
+}
+
+body.theme-coffee #theme-modal .auth-submit:hover{
+    background:
+        linear-gradient(
+            180deg,
+            rgba(140,100,72,.98),
+            rgba(95,67,48,.98)
+        );
+
+    transform:translateY(-1px);
+}
+
+body.theme-coffee #theme-modal .auth-close{
+    color:#e8d3b0;
+}
+
+body.theme-coffee #theme-modal .auth-close:hover{
+    color:#fff2d9;
+}
+
+body.theme-coffee #theme-overlay{
+    backdrop-filter:blur(12px);
+
+    background:rgba(20,12,8,.45);
+}

@@ -53,3 +53,11 @@ class NoteResponse(NotePayload):
     class Config:
 
         from_attributes = True
+
+class ThemePayload(BaseModel):
+
+    theme: str = Field(
+        min_length=1,
+        max_length=32
+    )
+
