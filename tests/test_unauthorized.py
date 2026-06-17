@@ -5,7 +5,7 @@ client = TestClient(app)
 
 
 def test_get_notes_without_auth():
-    response = client.get("/notes")
+    response = client.get("/api/notes")
 
     assert response.status_code == 401
 
