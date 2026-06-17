@@ -41,6 +41,7 @@ services:
       - my
   
   migrate:
+    container_name: migrate
     image: backend:v1.0
     build:
       context: .
