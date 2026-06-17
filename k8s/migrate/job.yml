@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: migrate
+  namespace: note
+
+spec:
+  backoffLimit: 3
+
+  template:
+    spec:
+      restartPolicy: Never
+
+      containers: 
+        - name: migrate
+          image: ghcr.io/rabs1stem/notes-backend:dda4f0288adf2e9f33a768d0827b26a3b949c36c
+          imagePullPolicy: IfNotPresent
+          
+          command:
+            - alembic
+            - upgrade
+            - head
+
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
+          envFrom:
+            - configMapRef:
+                name: backend-config
+              
+            - secretRef:
+                name: backend-secret

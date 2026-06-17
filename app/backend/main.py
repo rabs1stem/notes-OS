@@ -69,7 +69,7 @@ def get_user_or_401(notes_session: str | None, db: Session) -> User:
 
 
 
-@app.post("/register")
+@app.post("/api/register")
 def register(payload: RegisterPayload, db: Session = Depends(get_db)):
     username = payload.username.strip().lower()
     if payload.password != payload.confirm_password:
@@ -86,7 +86,7 @@ def register(payload: RegisterPayload, db: Session = Depends(get_db)):
     return {"ok": True}
 
 
-@app.post("/login")
+@app.post("/api/login")
 def login(payload: AuthPayload, response: Response, db: Session = Depends(get_db)):
     username = payload.username.strip().lower()
     user = db.query(User).filter(User.username == username).first()
@@ -107,7 +107,7 @@ def login(payload: AuthPayload, response: Response, db: Session = Depends(get_db
     return {"ok": True, "username": username, "theme": user.theme}
 
 
-@app.post("/logout")
+@app.post("/api/logout")
 def logout(response: Response, notes_session: str | None = Cookie(default=None)):
     if notes_session:
         delete_session(notes_session)
@@ -115,7 +115,7 @@ def logout(response: Response, notes_session: str | None = Cookie(default=None))
     return {"ok": True}
 
 
-@app.get("/notes")
+@app.get("/api/notes")
 def get_notes(notes_session: str | None = Cookie(default=None), db: Session = Depends(get_db)):
     user = get_user_or_401(notes_session, db)
     notes = db.query(Note).filter(Note.user_id == user.id).all()
@@ -139,7 +139,7 @@ def get_notes(notes_session: str | None = Cookie(default=None), db: Session = De
     }
 
 
-@app.post("/notes")
+@app.post("/api/notes")
 def save_note(
     payload: NotePayload,
     notes_session: str | None = Cookie(default=None),
@@ -206,7 +206,7 @@ def save_note(
     }
 
 
-@app.delete("/notes/{note_id}")
+@app.delete("/api/notes/{note_id}")
 def delete_note(note_id: int, notes_session: str | None = Cookie(default=None), db: Session = Depends(get_db)):
     user = get_user_or_401(notes_session, db)
     note = db.query(Note).filter(Note.id == note_id, Note.user_id == user.id).first()
@@ -222,7 +222,7 @@ def delete_note(note_id: int, notes_session: str | None = Cookie(default=None), 
 def health():
     return {"status": "ok"}
 
-@app.post("/theme")
+@app.post("/api/theme")
 def set_theme(
     payload: ThemePayload,
     notes_session: str | None = Cookie(default=None),

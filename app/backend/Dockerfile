@@ -14,8 +14,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 COPY --from=builder /install /usr/local
 COPY app/backend ./app
-COPY /alembic ./alembic
-COPY alembic.ini .
+COPY alembic alembic.ini ./
 RUN apt-get update && apt-get upgrade -y --no-install-recommends \
 && groupadd --system app && useradd --system --gid app app \
 && mkdir -p /app/data && chown -R app:app ./ \

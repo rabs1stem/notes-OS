@@ -12,3 +12,4 @@ nginx-docker/
 tests/
 My Monitor.json
 /backups
+/k8s

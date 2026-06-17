@@ -7,3 +7,4 @@ venv/
 .env
 *.log
 monitoring/alertmanager.yml
+k8s/backend/secret.yml

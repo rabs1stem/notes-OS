@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: backend-config
+  namespace: note
+
+data:
+  POSTGRES_DB: "not_db"
+  POSTGRES_USER: "not_user"
+  DATABASE_HOST: "postgres-service"
+  DATABASE_PORT: "5432"
+
+  REDIS_HOST: "redis-service"
+  REDIS_PORT: "6379"
+  REDIS_URL: "redis://redis-service:6379/0"
+
+  TELEGRAM_ADMIN: "983685013"
+
+  SMTP_FROM: "arab177gy@yandex.ru"
+  SMTP_USERNAME: "arab177gy@yandex.ru"
+  ALERT_EMAIL: "arab177gy@yandex.ru"

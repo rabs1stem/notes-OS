@@ -15,3 +15,4 @@ nginx-internal/
 nginx-docker/
 My Monitor.json
 /backups
+/k8s
