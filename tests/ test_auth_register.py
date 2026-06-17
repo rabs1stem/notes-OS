@@ -10,7 +10,7 @@ def test_register_user():
     username = f"test-{uuid.uuid4()}"
 
     response = client.post(
-        "/register",
+        "/api/register",
         json={
             "username": username,
             "password": "password123",

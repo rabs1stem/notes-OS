@@ -6,7 +6,7 @@ client = TestClient(app)
 
 def test_register_passwords_must_match():
     response = client.post(
-        "/register",
+        "/api/register",
         json={
             "username": "alex",
             "password": "123456",
