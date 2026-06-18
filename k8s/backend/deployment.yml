@@ -7,6 +7,8 @@ metadata:
 
 spec:
   replicas: 2
+  
+  revisionHistoryLimit: 5
 
   strategy:
     type: RollingUpdate
@@ -25,10 +27,19 @@ spec:
         app: backend
 
     spec:
+      terminationGracePeriodSeconds: 30
+        
       containers:
         - name: backend
-          image: ghcr.io/rabs1stem/notes-backend:dda4f0288adf2e9f33a768d0827b26a3b949c36c
+          image: ghcr.io/rabs1stem/notes-backend:3a0fd15aae626f1fb8ec8c36fdf305817bf1d71c 
           imagePullPolicy: IfNotPresent
+
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
 
           ports:
             - containerPort: 8000

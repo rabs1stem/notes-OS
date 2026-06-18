@@ -8,6 +8,8 @@ metadata:
 spec:
   replicas: 2
 
+  revisionHistoryLimit: 5
+
   strategy:
     type: RollingUpdate
 
@@ -25,10 +27,17 @@ spec:
         app: frontend
     
     spec:
+      terminationGracePeriodSeconds: 30
+
       containers:
         - name: frontend
-          image: ghcr.io/rabs1stem/notes-frontend:dda4f0288adf2e9f33a768d0827b26a3b949c36c
+          image: ghcr.io/rabs1stem/notes-frontend:3a0fd15aae626f1fb8ec8c36fdf305817bf1d71c
           imagePullPolicy: IfNotPresent
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
 
           resources:
             requests:
