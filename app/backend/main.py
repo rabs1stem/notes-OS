@@ -5,6 +5,7 @@ import os
 import secrets
 
 from fastapi import Cookie, Depends, FastAPI, HTTPException, Response, status
+from prometheus_fastapi_instrumentator import Instrumentator
 from redis import Redis
 from redis.exceptions import RedisError
 from sqlalchemy.orm import Session
@@ -14,6 +15,8 @@ from .models import Note, User
 from .schemas import AuthPayload, NotePayload, RegisterPayload, ThemePayload
 
 app = FastAPI()
+
+Instrumentator().instrument(app).expose(app)
 
 SESSION_COOKIE = "notes_session"
 SESSION_TTL_SECONDS = int(os.getenv("SESSION_TTL_SECONDS", str(60 * 60 * 24 * 7)))

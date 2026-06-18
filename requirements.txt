@@ -7,3 +7,4 @@ redis==6.4.0
 psycopg2-binary==2.9.10
 gunicorn==23.0.0
 alembic==1.16.5
+prometheus-fastapi-instrumentator==7.1.0
