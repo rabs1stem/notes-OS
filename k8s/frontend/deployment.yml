@@ -31,13 +31,8 @@ spec:
 
       containers:
         - name: frontend
-          image: ghcr.io/rabs1stem/notes-frontend:3a0fd15aae626f1fb8ec8c36fdf305817bf1d71c
+          image: ghcr.io/rabs1stem/notes-frontend:6755791e46a05b7a1529805d77ab05480ca4d2be
           imagePullPolicy: IfNotPresent
-
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
 
           resources:
             requests:

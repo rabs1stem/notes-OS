@@ -17,10 +17,10 @@ COPY app/backend ./app
 COPY /alembic ./alembic
 COPY alembic.ini .
 RUN apt-get update && apt-get upgrade -y --no-install-recommends \
-&& groupadd --system app && useradd --system --gid app app \
-&& mkdir -p /app/data && chown -R app:app ./ \
+&& groupadd --system --gid 1001 app && useradd --system --uid 1001 --gid 1001 app \
+&& mkdir -p /app/data && chown -R 1001:1001 ./ \
 && rm -rf /var/lib/apt/lists/*
-USER app
+USER 1001:1001
 EXPOSE 8000
 HEALTHCHECK --interval=20s --timeout=5s --start-period=7s --retries=3 \
 CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"
