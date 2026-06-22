@@ -31,7 +31,7 @@ spec:
         
       containers:
         - name: backend
-          image: ghcr.io/rabs1stem/notes-backend:6755791e46a05b7a1529805d77ab05480ca4d2be 
+          image: ghcr.io/rabs1stem/notes-backend:f27e8363a55817595e219f49e32f73c4559ee1fe  
           imagePullPolicy: IfNotPresent
 
           securityContext:
@@ -42,6 +42,10 @@ spec:
             readOnlyRootFilesystem: true
             capabilities:
               drop: ["ALL"]
+
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
 
           ports:
             - containerPort: 8000
@@ -90,3 +94,8 @@ spec:
             periodSeconds: 20
             timeoutSeconds: 3
             failureThreshold: 3
+
+      volumes:
+        - name: tmp
+          emptyDir:
+            medium: Memory

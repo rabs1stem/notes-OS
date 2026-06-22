@@ -4,13 +4,16 @@ kind: Service
 metadata:
   name: backend-service
   namespace: note
+  labels:
+    app: backend
 
 spec:
   selector:
     app: backend
   
   ports:
-    - port: 8000
+    - name: http
+      port: 8000
       targetPort: 8000
 
   type: ClusterIP

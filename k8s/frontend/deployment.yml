@@ -31,7 +31,7 @@ spec:
 
       containers:
         - name: frontend
-          image: ghcr.io/rabs1stem/notes-frontend:6755791e46a05b7a1529805d77ab05480ca4d2be
+          image: ghcr.io/rabs1stem/notes-frontend:f27e8363a55817595e219f49e32f73c4559ee1fe 
           imagePullPolicy: IfNotPresent
 
           resources:
