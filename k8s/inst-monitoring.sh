@@ -82,6 +82,21 @@ prometheus-community/kube-prometheus-stack \
 --wait \
 --timeout 30m
 
+step "FIX COREDNS"
+
+if ! kubectl get cm coredns -n kube-system -o yaml | grep -q "1.1.1.1"; then
+
+  kubectl get cm coredns -n kube-system -o yaml \
+  | sed 's|forward \. /etc/resolv.conf {|forward . 1.1.1.1 8.8.8.8 {|' \
+  | kubectl apply -f -
+
+  kubectl rollout restart deployment coredns -n kube-system
+
+  kubectl rollout status deployment coredns \
+  -n kube-system \
+  --timeout=5m
+fi
+
 step "INSTALL BLACKBOX EXPORTER"
 
 retry helm upgrade --install blackbox-exporter \
@@ -189,22 +204,28 @@ kubectl get secret ${RELEASE}-grafana \
 | base64 -d
 )
 
+step "WAIT FOR GRAFANA"
+
+kubectl rollout status deployment/${RELEASE}-grafana \
+-n ${NAMESPACE} \
+--timeout=10m
+
 step "START PORT FORWARDS"
 
 pkill -f "port-forward.*grafana" >/dev/null 2>&1 || true
 pkill -f "port-forward.*prometheus" >/dev/null 2>&1 || true
 
-kubectl port-forward \
+nohup kubectl port-forward \
 svc/${RELEASE}-grafana \
 ${GRAFANA_PORT}:80 \
 -n ${NAMESPACE} \
->/dev/null 2>&1 &
+>/tmp/grafana-port-forward.log 2>&1 &
 
-kubectl port-forward \
+nohup kubectl port-forward \
 svc/${RELEASE}-kube-prometheus-prometheus \
 ${PROMETHEUS_PORT}:9090 \
 -n ${NAMESPACE} \
->/dev/null 2>&1 &
+>/tmp/prometheus-port-forward.log 2>&1 &
 
 sleep 5
 
